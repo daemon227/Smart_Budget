@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Model.Data;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -85,7 +86,7 @@ public class IncomeFragment extends Fragment {
                     Data data=mysnapshot.getValue(Data.class);
                     totalvalue=totalvalue+data.getAmount();
                     String stTotalvalue=String.valueOf(totalvalue);
-                    incomeTotalSum.setText(stTotalvalue+".00");
+                    incomeTotalSum.setText(stTotalvalue+"");
 
                 }
 
@@ -105,37 +106,60 @@ public class IncomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FirebaseRecyclerAdapter<Data,MyViewHolder>adapter= new FirebaseRecyclerAdapter<Data, MyViewHolder>(
+        FirebaseRecyclerOptions<Data> options =
+                new FirebaseRecyclerOptions.Builder<Data>()
+                        .setQuery(mIncomeDatabase, Data.class)
+                        .build();
 
-                Data.class,
-                R.layout.income_recycler_data,
-                MyViewHolder.class,
-                mIncomeDatabase
-        ) {
-            @Override
-            protected void populateViewHolder(MyViewHolder myViewHolder,final Data model,final int position) {
+        FirebaseRecyclerAdapter<Data, MyViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Data, MyViewHolder>(options) {
 
-                myViewHolder.setType(model.getType());
-                myViewHolder.setNote(model.getNote());
-                myViewHolder.setDate(model.getDate());
-                myViewHolder.setAmount(model.getAmount());
-
-                myViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        post_key=getRef(position).getKey();
+                    protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Data model) {
 
-                        type=model.getType();
-                        note=model.getNote();
-                        amount=model.getAmount();
+                        holder.setType(model.getType());
+                        holder.setNote(model.getNote());
+                        holder.setDate(model.getDate());
+                        holder.setAmount(model.getAmount());
 
-                        updateDataItem();
+                        holder.mView.setOnClickListener(v -> {
+                            post_key = getRef(position).getKey();
+
+                            type   = model.getType();
+                            note   = model.getNote();
+                            amount = model.getAmount();
+
+                            updateDataItem();
+                        });
                     }
-                });
-            }
-        };
+
+                    @NonNull
+                    @Override
+                    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.income_recycler_data, parent, false);
+                        return new MyViewHolder(view);
+                    }
+                };
+
         recyclerView.setAdapter(adapter);
+        adapter.startListening();
+
+        // Lưu lại adapter nếu bạn dùng stopListening() trong onStop()
+        this.adapter = adapter;
     }
+
+    private FirebaseRecyclerAdapter<Data, MyViewHolder> adapter;
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+    }
+
+
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 

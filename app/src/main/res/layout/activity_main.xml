@@ -24,11 +24,11 @@
         android:layout_gravity="center"
         android:layout_marginTop="-30dp"
         android:fontFamily="@font/faster_one"
-        android:text="@string/spendee1"
+        android:text="Smart Budget"
         android:id="@+id/spendee_text1"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="50sp"
+        android:textSize="40sp"
         android:textStyle="italic" />
 
     <TextView
@@ -38,7 +38,7 @@
         android:layout_marginTop="5dp"
         android:fontFamily="@font/architects_daughter"
         android:gravity="center_horizontal"
-        android:text="@string/expense_tracker_and_budget_manager"
+        android:text="Quản lý thu nhập và chi tiêu cá nhân hiệu quả!!!"
         android:id="@+id/spendee_text2"
         android:textAlignment="center"
         android:textColor="@color/black"

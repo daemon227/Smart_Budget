@@ -28,7 +28,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="AMOUNT:"
+                        android:text="SỐ TIỀN:"
                         android:textColor="@color/black"
                         android:textSize="18dp"
                         />
@@ -66,7 +66,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TYPE:"
+                        android:text="LOẠI:"
                         android:textSize="18dp"
                         android:textColor="@color/black"
                         />
@@ -104,7 +104,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="NOTE:"
+                        android:text="GHI CHÚ:"
                         android:textSize="18dp"
                         android:textColor="@color/black"
                         />
@@ -145,7 +145,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/yellow"
                         android:backgroundTint="@color/yellow"
-                        android:text="Delete"
+                        android:text="Hủy"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:textColor="@color/black" />
 
@@ -165,7 +165,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/yellow"
                         android:backgroundTint="@color/yellow"
-                        android:text="Update"
+                        android:text="Cập nhật"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:textColor="@color/black" />
 

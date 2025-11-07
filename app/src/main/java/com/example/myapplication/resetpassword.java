@@ -38,7 +38,7 @@ public class resetpassword extends AppCompatActivity {
 
                 if(useremail.equals(""))
                 {
-                  passwordEmail.setError("Email Required...",null);
+                  passwordEmail.setError("Nhập email của bạn...",null);
                   return;
                 }
                 else
@@ -48,13 +48,13 @@ public class resetpassword extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful())
                             {
-                                Toast.makeText(resetpassword.this,"Email sent successfully..",Toast.LENGTH_LONG).show();
+                                Toast.makeText(resetpassword.this,"Kiểm tra hòm thư của bạn..",Toast.LENGTH_LONG).show();
                                 finish();
                                 startActivity(new Intent(resetpassword.this,home_screen.class));
                             }
                             else
                             {
-                                Toast.makeText(resetpassword.this,"Error sending email..",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(resetpassword.this,"Có lỗi khi gửi..",Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

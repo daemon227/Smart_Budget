@@ -27,7 +27,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,7 +49,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     private FirebaseAuth mAuth;
 
     ArrayList<HashMap<String,Object>> items;
-    PackageManager pm ;
+    PackageManager pm;
     List<PackageInfo> packs;
 
     @Override
@@ -82,16 +81,31 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         setFragment(dashboardFragment);
 
 
-        mAuth=FirebaseAuth.getInstance();
-        FirebaseUser mUser=mAuth.getCurrentUser();
+        // ✅ FIX: Check user login first
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+
+        if (mUser == null) {
+            // Chưa login → quay lại LoginActivity/Home screen
+            Intent intent = new Intent(first_home_page.this, home_screen.class); // thay bằng activity login của bạn
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // ✅ User tồn tại → lấy UID
         String uid = mUser.getUid();
-        DatabaseReference mUserInfoDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(uid);
+        DatabaseReference mUserInfoDatabase = FirebaseDatabase.getInstance().getReference()
+                .child("UserInfo").child(uid);
+
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userEmail = dataSnapshot.child("Email").getValue().toString();
-                TextView email=findViewById(R.id.user_email);
-                email.setText(userEmail);
+                if(dataSnapshot.exists() && dataSnapshot.child("Email").getValue() != null) {
+                    String userEmail = dataSnapshot.child("Email").getValue().toString();
+                    TextView email=findViewById(R.id.user_email);
+                    email.setText(userEmail);
+                }
             }
 
             @Override
@@ -133,13 +147,11 @@ public class first_home_page extends AppCompatActivity implements NavigationView
 
                     default:
                         return false;
-
                 }
-
             }
         });
 
-        items =new  ArrayList<HashMap<String,Object>>();
+        items =new ArrayList<HashMap<String,Object>>();
         pm = getPackageManager();
         packs = pm.getInstalledPackages(0);
         for (PackageInfo pi : packs)
@@ -153,7 +165,6 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     }
 
     private void setFragment(Fragment fragment) {
-
         FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame,fragment);
         fragmentTransaction.commit();
@@ -168,14 +179,13 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         else{
             super.onBackPressed();
         }
-
     }
+
     public void displaySelectedListener(int itemId){
         Fragment fragment=null;
         switch(itemId){
             case R.id.profile:
-                Intent profile_intent=new Intent(getApplicationContext(),Profile.class);
-                startActivity(profile_intent);
+                startActivity(new Intent(getApplicationContext(),Profile.class));
                 break;
 
             case R.id.dashboard:
@@ -187,8 +197,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 break;
 
             case R.id.search_income:
-                Intent intent_inc=new Intent(getApplicationContext(),searchdata.class);
-                startActivity(intent_inc);
+                startActivity(new Intent(getApplicationContext(),searchdata.class));
                 break;
 
             case R.id.expense:
@@ -196,13 +205,11 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 break;
 
             case R.id.search_expense:
-                Intent intent_exp=new Intent(getApplicationContext(),searchdata2.class);
-                startActivity(intent_exp);
+                startActivity(new Intent(getApplicationContext(),searchdata2.class));
                 break;
 
             case R.id.income_tax_emi:
-                Intent intent3=new Intent(getApplicationContext(),inc_emi.class);
-                startActivity(intent3);
+                startActivity(new Intent(getApplicationContext(),inc_emi.class));
                 break;
 
             case R.id.calculator:
@@ -241,33 +248,27 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 }
                 break;
 
-            case R.id.feedback:
-                Intent intent2=new Intent(getApplicationContext(),feedback.class);
-                startActivity(intent2);
-                break;
-
-            case R.id.about:
-                Intent intent4=new Intent(getApplicationContext(),about.class);
-                startActivity(intent4);
-                break;
+//            case R.id.feedback:
+//                startActivity(new Intent(getApplicationContext(),feedback.class));
+//                break;
+//
+//            case R.id.about:
+//                startActivity(new Intent(getApplicationContext(),about.class));
+//                break;
 
             case R.id.logout:
                 AlertDialog.Builder builder=new AlertDialog.Builder(first_home_page.this);
-                builder.setTitle("Logout");
-                builder.setMessage("Do you really want to Logout?");
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                builder.setTitle("Đăng xuất");
+                builder.setMessage("Bạn có chắc muốn đăng xuất?");
+                builder.setPositiveButton("Gặp lại sau <3", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        finishAffinity();
+                        FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(getApplicationContext(),home_screen.class));
+                        finishAffinity();
                     }
                 });
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                builder.setNegativeButton("Ở lại", (dialog, which) -> dialog.dismiss());
                 builder.show();
                 break;
         }
@@ -281,6 +282,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         drawerLayout.closeDrawer(GravityCompat.START);
     }
 
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         displaySelectedListener(item.getItemId());
         return true;

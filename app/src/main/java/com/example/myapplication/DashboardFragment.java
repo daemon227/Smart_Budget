@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Model.Data;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
@@ -61,7 +63,7 @@ public class DashboardFragment extends Fragment {
     BarData barData;
     BarDataSet barDataSet;
     ArrayList barEntries;
-    final String[] date=new String[10000000];
+    ArrayList<String> date = new ArrayList<>();
 
     private FloatingActionButton fab_main;
     private FloatingActionButton fab_income_btn;
@@ -80,9 +82,9 @@ public class DashboardFragment extends Fragment {
     private TextView totalExpenseResult;
     private TextView totalBalanceResult;
 
-    static int totalsumexpense=0;
-    static int totalsumincome=0;
-    static int balance;
+    static double totalsumexpense=0;
+    static double totalsumincome=0;
+    static double balance;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mIncomeDatabase;
@@ -99,17 +101,21 @@ public class DashboardFragment extends Fragment {
         // Inflate the layout for this fragment
         View myview=inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        mAuth=FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
 
-        FirebaseUser mUser=mAuth.getCurrentUser();
-
-        if(mAuth.getCurrentUser()!=null) {
-
-            String uid = mUser.getUid();
-
-            mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
-            mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+        if (mUser == null) {
+            Toast.makeText(getActivity(), "Hãy thử đăng nhập lại!", Toast.LENGTH_SHORT).show();
+            // điều hướng về Login
+            startActivity(new Intent(getActivity(), home_screen.class));
+            getActivity().finish();
+            return myview; // tránh crash
         }
+
+        String uid = mUser.getUid();
+        mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
+        mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+
 
 
         fab_main=myview.findViewById(R.id.fb_main_lus_btn);
@@ -140,10 +146,10 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 getBarEntries(snapshot);
-                barDataSet=new BarDataSet(barEntries,"Expenses");
+                barDataSet=new BarDataSet(barEntries,"Chi tiêu");
                 barData=new BarData(barDataSet);
                 barChart.setData(barData);
-                barChart.getDescription().setText("Expenses Per Day");
+                barChart.getDescription().setText("Chi mỗi ngãy");
                 XAxis xval=barChart.getXAxis();
                 xval.setDrawLabels(true);
                 xval.setValueFormatter(new IndexAxisValueFormatter(date));
@@ -218,12 +224,12 @@ public class DashboardFragment extends Fragment {
 
                     String strResult=String.valueOf(totalsumexpense);
 
-                    totalExpenseResult.setText(strResult+".00");
+                    totalExpenseResult.setText(strResult+"");
 
                 }
                 balance=totalsumincome-totalsumexpense;
                 String strBalance=String.valueOf(balance);
-                totalBalanceResult.setText(strBalance+".00");
+                totalBalanceResult.setText(strBalance+"");
             }
 
             @Override
@@ -246,7 +252,7 @@ public class DashboardFragment extends Fragment {
 
                     String stResult=String.valueOf(totalsumincome);
 
-                    totalIncomeResult.setText(stResult+".00");
+                    totalIncomeResult.setText(stResult+"");
 
                 }
                 balance=totalsumincome-totalsumexpense;
@@ -279,7 +285,7 @@ public class DashboardFragment extends Fragment {
                     builder.show();
                 }
                 String strBalance=String.valueOf(balance);
-                totalBalanceResult.setText(strBalance+".00");
+                totalBalanceResult.setText(strBalance+"");
             }
 
             @Override
@@ -461,7 +467,7 @@ public class DashboardFragment extends Fragment {
                     edtNote.setError("Required Field..");
                     return;
                 }
-                if(mAuth.getCurrentUser()!=null && balance!=0.0 && balance>0.0) {
+                if(mAuth.getCurrentUser()!=null) {
                     String id = mExpenseDatabase.push().getKey();
                     String mDate = DateFormat.getDateInstance().format(new Date());
                     Data data = new Data(ouramountinte, type, note, id, mDate);
@@ -486,36 +492,69 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if (mAuth.getCurrentUser() == null) {
+            startActivity(new Intent(getActivity(), home_screen.class));
+            getActivity().finish();
+            return;
+        }
 
-        FirebaseRecyclerAdapter<Data,IncomeViewHolder>incomeAdapter=new FirebaseRecyclerAdapter<Data, IncomeViewHolder>
-                (
-                        Data.class,
-                        R.layout.dashboard_income,
-                        DashboardFragment.IncomeViewHolder.class,
-                        mIncomeDatabase
-                ) {
-            @Override
-            protected void populateViewHolder(IncomeViewHolder incomeViewHolder, Data model, int position) {
-                incomeViewHolder.setIncomeType(model.getType());
-                incomeViewHolder.setIncomeAmount(model.getAmount());
-                incomeViewHolder.setIncomeDate(model.getDate());
-            }
-        };
+
+        // ---- Income Adapter ----
+        FirebaseRecyclerOptions<Data> incomeOptions =
+                new FirebaseRecyclerOptions.Builder<Data>()
+                        .setQuery(mIncomeDatabase, Data.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<Data, IncomeViewHolder> incomeAdapter =
+                new FirebaseRecyclerAdapter<Data, IncomeViewHolder>(incomeOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull IncomeViewHolder holder, int position, @NonNull Data model) {
+                        holder.setIncomeType(model.getType());
+                        holder.setIncomeAmount(model.getAmount());
+                        holder.setIncomeDate(model.getDate());
+                    }
+
+                    @NonNull
+                    @Override
+                    public IncomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.dashboard_income, parent, false);
+                        return new IncomeViewHolder(view);
+                    }
+                };
+
         mRecyclerIncome.setAdapter(incomeAdapter);
+        incomeAdapter.startListening();
 
-        FirebaseRecyclerAdapter<Data,ExpenseViewHolder>expenseAdapter=new FirebaseRecyclerAdapter<Data, ExpenseViewHolder>
-                (Data.class,R.layout.dashboard_expense,DashboardFragment.ExpenseViewHolder.class,mExpenseDatabase) {
-            @Override
-            protected void populateViewHolder(ExpenseViewHolder expenseViewHolder, Data data, int i) {
 
-                expenseViewHolder.setExpenseType(data.getType());
-                expenseViewHolder.setExpenseAmount(data.getAmount());
-                expenseViewHolder.setExpenseDate(data.getDate());
-            }
-        };
+        // ---- Expense Adapter ----
+        FirebaseRecyclerOptions<Data> expenseOptions =
+                new FirebaseRecyclerOptions.Builder<Data>()
+                        .setQuery(mExpenseDatabase, Data.class)
+                        .build();
+
+        FirebaseRecyclerAdapter<Data, ExpenseViewHolder> expenseAdapter =
+                new FirebaseRecyclerAdapter<Data, ExpenseViewHolder>(expenseOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position, @NonNull Data model) {
+                        holder.setExpenseType(model.getType());
+                        holder.setExpenseAmount(model.getAmount());
+                        holder.setExpenseDate(model.getDate());
+                    }
+
+                    @NonNull
+                    @Override
+                    public ExpenseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.dashboard_expense, parent, false);
+                        return new ExpenseViewHolder(view);
+                    }
+                };
+
         mRecyclerExpense.setAdapter(expenseAdapter);
-
+        expenseAdapter.startListening();
     }
+
 
     //For Income Data
     public static class IncomeViewHolder extends RecyclerView.ViewHolder{
@@ -586,7 +625,7 @@ public class DashboardFragment extends Fragment {
             for (DataSnapshot ds : snap.getChildren()) {
                 Data data = ds.getValue(Data.class);
                 //String date = data.getDate();
-                date[a1]=data.getDate().substring(0,7);
+                date.add(data.getDate().substring(0,7));
 
                 float amm = data.getAmount();
                 //String name=ds.child(data.getId()).child("type").getValue(String.class);

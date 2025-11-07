@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_marginTop="50dp"
-                android:hint="Email"
+                android:hint="Nhập email..."
                 android:textColorHint="@android:color/black"
                 android:textColor="@android:color/black"
                  />
@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Create Password"
+                android:hint="Nhập mật khẩu..."
                 android:inputType="textPassword"
                 android:textColor="@android:color/black"
                 android:textColorHint="@android:color/black" />
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@color/yellow"
-                android:text="Register"
+                android:text="Đăng ký ngay"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:textColor="@android:color/black"
                 android:textColorHint="@android:color/black"
@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Already have an account? Sign in here." />
+                android:text="Đã có tài khoản. Đăng nhập ngay." />
 
 
         </LinearLayout>

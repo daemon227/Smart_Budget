@@ -45,17 +45,17 @@ public class change_password extends AppCompatActivity {
                 String newString=NewPass.getText().toString().trim();
 
                 if(TextUtils.isEmpty(oldString)){
-                    oldPass.setError("Required Field..",null);
+                    oldPass.setError("Chưa nhập mật khẩu cũ..",null);
                     return;
                 }
                 if(TextUtils.isEmpty(newString)){
-                    NewPass.setError("Required Field..",null);
+                    NewPass.setError("Chưa nhập mật khẩu mới..",null);
                     return;
                 }
 
                 if(newString.length()<6)
                 {
-                    NewPass.setError("Must contain at least 6 characters..",null);
+                    NewPass.setError("Phải chứa ít nhất 6 kí tự..",null);
                     return;
                 }
 
@@ -71,13 +71,13 @@ public class change_password extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful())
                                         {
-                                            Toast.makeText(change_password.this,"Password changed successfully..",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(change_password.this,"Đổi mật khẩu thành công..",Toast.LENGTH_LONG).show();
                                             Intent intent=new Intent(change_password.this,home_screen.class);
                                             startActivity(intent);
                                         }
                                         else
                                         {
-                                            Toast.makeText(change_password.this,"Something went wrong. Please try again later..",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(change_password.this,"Có lỗi. Hãy thử lại sau..",Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });

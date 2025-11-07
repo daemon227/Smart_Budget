@@ -65,20 +65,20 @@ public class Registration extends AppCompatActivity {
                 String email=mEmail.getText().toString().trim();
                 String pass=mPass.getText().toString().trim();
                 if(TextUtils.isEmpty(email)){
-                    mEmail.setError("Email required..",null);
+                    mEmail.setError("Nhập địa chỉ email..",null);
                     return;
                 }
                 if(TextUtils.isEmpty(pass)){
-                    mPass.setError("Password required..",null);
+                    mPass.setError("Nhập mật khẩu..",null);
                     return;
                 }
                 if(pass.length()<6)
                 {
-                    mPass.setError("Must contain at least 6 characters..",null);
+                    mPass.setError("Mật khẩu phải chứa ít nhất 6 kí tự..",null);
                     return;
                 }
 
-                mDialog.setMessage("Processing..");
+                mDialog.setMessage("Đang xử lý..");
                 mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -98,7 +98,7 @@ public class Registration extends AppCompatActivity {
                             else {
                                 mDialog.dismiss();
 
-                                Toast.makeText(getApplicationContext(),"Registration failed..",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(),"Đăng ký thất bại..",Toast.LENGTH_SHORT).show();
 
                             }
                         }

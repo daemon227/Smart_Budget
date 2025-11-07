@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Spendee</string>
-    <string name="spendee1">SPENDEE</string>
+    <string name="app_name">SmartBudget</string>
+    <string name="spendee1">SMARTBUDGET</string>
     <string name="expense_tracker_and_budget_manager">Expense Tracker and Budget Manager</string>
     <string name="navigation_drawer_open" />
     <string name="navigation_drawer_close" />

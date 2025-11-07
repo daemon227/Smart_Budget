@@ -23,7 +23,7 @@
         android:layout_marginBottom="20dp"
         android:background="#FFECB3"
         android:drawableLeft="@drawable/ic_search"
-        android:hint="Search by date"
+        android:hint="Tím kiếm theo ngày"
         android:padding="10dp"
         android:textColorHint="@color/black">
 

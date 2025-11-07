@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/dashboard"
-        android:title="Dashboard"
+        android:title="Trang chủ"
         android:icon="@drawable/ic_dashboard">
 
     </item>
     <item android:id="@+id/income"
-        android:title="Income"
+        android:title="Thu nhập"
         android:icon="@drawable/ic_income"
         ></item>
     <item android:id="@+id/income_search"
-        android:title="Search Income"
+        android:title="Tìm thu nhập"
         android:icon="@drawable/search_income"
         ></item>
     <item android:id="@+id/expense"
-        android:title="Expense"
+        android:title="Chi phí"
         android:icon="@drawable/ic_expense">
     </item>
     <item android:id="@+id/expense_search"
-        android:title="Search Expense"
+        android:title="Tìm chi phí"
         android:icon="@drawable/search_expense"
         ></item>
 </menu>

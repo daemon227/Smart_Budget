@@ -37,7 +37,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="Balance"
+                        android:text="Tổng"
                         android:textStyle="bold">
 
                     </TextView>
@@ -82,7 +82,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="Income">
+                        android:text="Thu">
 
                     </TextView>
                 </RelativeLayout>
@@ -98,7 +98,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Large"
                         android:textColor="@color/red"
                         android:gravity="center"
-                        android:text="Expense">
+                        android:text="Chi">
 
                     </TextView>
                 </RelativeLayout>
@@ -171,7 +171,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="Income History"
+                    android:text="Lịch sử thu nhập"
                     android:textAppearance="?android:textAppearanceLarge" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -182,7 +182,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Expense History"
+                    android:text="Lịch sử chi tiêu"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:padding="10dp"></TextView>
 
@@ -196,7 +196,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Expense Statistics"
+                    android:text="Thống kê chi phí"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:padding="10dp"></TextView>
 

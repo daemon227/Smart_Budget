@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/profile"
-        android:title="My Profile"
+        android:title="Thông tin cá nhân"
         android:icon="@drawable/ic_profile">
 
     </item>
     <item android:id="@+id/dashboard"
-        android:title="Dashboard"
+        android:title="Trang chủ"
         android:icon="@drawable/ic_dashboard">
 
     </item>
     <item android:id="@+id/income"
-        android:title="Income"
+        android:title="Thu nhập"
         android:icon="@drawable/ic_income">
 
     </item>
     <item android:id="@+id/search_income"
-        android:title="Search Income"
+        android:title="Tím kiếm nguồn thu"
         android:icon="@drawable/search_income">
 
     </item>
     <item android:id="@+id/expense"
-        android:title="Expense"
+        android:title="Chi tiêu"
         android:icon="@drawable/ic_expense">
 
     </item>
     <item android:id="@+id/search_expense"
-        android:title="Search Expense"
+        android:title="Tìm kiếm khoản chi"
         android:icon="@drawable/search_expense">
 
     </item>
@@ -40,18 +40,18 @@
         android:icon="@drawable/ic__calculator">
 
     </item>
-    <item android:id="@+id/feedback"
-        android:title="Rate us"
-        android:icon="@drawable/ic_star_rate">
+<!--    <item android:id="@+id/feedback"-->
+<!--        android:title="Rate us"-->
+<!--        android:icon="@drawable/ic_star_rate">-->
 
-    </item>
-    <item android:id="@+id/about"
-        android:title="About"
-        android:icon="@drawable/ic_about">
+<!--    </item>-->
+<!--    <item android:id="@+id/about"-->
+<!--        android:title="About"-->
+<!--        android:icon="@drawable/ic_about">-->
 
-    </item>
+<!--    </item>-->
     <item android:id="@+id/logout"
-        android:title="Logout"
+        android:title="Đăng xuất"
         android:icon="@drawable/ic_logout">
 
     </item>

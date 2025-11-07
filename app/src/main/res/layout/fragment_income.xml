@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:textColor="@color/black"
-                    android:text="Income"/>
+                    android:text="Tổng thu nhập"/>
 
             </RelativeLayout>
 

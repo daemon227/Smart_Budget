@@ -78,10 +78,10 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialog=new AlertDialog.Builder(Profile.this);
-                dialog.setTitle("Are you sure?");
-                dialog.setMessage("Deleting this account will result in completely removing your account from Spendee and you will no longer be able to access this account. " +
+                dialog.setTitle("Bạn đã chắc chắn chưa?");
+                dialog.setMessage("Deleting this account will result in completely removing your account from SmartBudget and you will no longer be able to access this account. " +
                         "In future if you wish to use the same email then you need to register again.");
-                dialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+                dialog.setPositiveButton("XÓA", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -89,7 +89,7 @@ public class Profile extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful())
                                 {
-                                    Toast.makeText(Profile.this,"Account Deleted Successfully..",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(Profile.this,"Xóa tài khoản thành công..",Toast.LENGTH_LONG).show();
                                     Intent intent=new Intent(Profile.this,home_screen.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -103,7 +103,7 @@ public class Profile extends AppCompatActivity {
                         });
                     }
                 });
-                dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                dialog.setNegativeButton("KHÔNG", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

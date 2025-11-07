@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:fontFamily="@font/sarina"
             android:gravity="center"
-            android:text="Spendee"
+            android:text="Smart Budget"
             android:textAppearance="?android:textAppearanceLarge"
             android:textSize="32dp" />
 
@@ -68,7 +68,7 @@
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black"
             android:inputType="textPassword"
-            android:hint="Password"
+            android:hint="Mật khẩu"
             android:id="@+id/password_login"
             />
 
@@ -76,10 +76,10 @@
 
         <CheckBox
             android:id="@+id/checkBox2"
-            android:layout_width="150dp"
+            android:layout_width="190dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Remember Me" />
+            android:text="Lưu thông tin đăng nhập" />
 
         <Button
             android:id="@+id/btn_login"
@@ -88,7 +88,7 @@
 
             android:layout_margin="10dp"
             android:background="@color/yellow"
-            android:text="Log In"
+            android:text="Đăng nhập"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@android:color/black"
             android:textColorHint="@android:color/black"
@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:id="@+id/forgot_password"
-            android:text="Forgot password?"
+            android:text="Quên mật khẩu?"
             android:padding="5dp"
             />
 
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:id="@+id/signup_reg"
-            android:text="Don't have an account? Sign up here."
+            android:text="Đăng ký ngay."
             android:padding="5dp"
             />
 

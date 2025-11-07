@@ -78,7 +78,7 @@ private FirebaseAuth mAuth;
                     SharedPreferences.Editor editor=preferences.edit();
                     editor.putString("remember","true");
                     editor.apply();
-                    Toast.makeText(home_screen.this,"Remember me Checked..",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(home_screen.this,"Ghi nhớ mật khẩu..",Toast.LENGTH_SHORT).show();
                 }
                 else if(!buttonView.isChecked())
                 {
@@ -86,7 +86,7 @@ private FirebaseAuth mAuth;
                     SharedPreferences.Editor editor=preferences.edit();
                     editor.putString("remember","false");
                     editor.apply();
-                    Toast.makeText(home_screen.this,"Remember me Unchecked..",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(home_screen.this,"Không nhớ mật khẩu..",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -113,14 +113,14 @@ private FirebaseAuth mAuth;
                 String email = mEmail.getText().toString().trim();
                 String pass = mPass.getText().toString().trim();
                 if (TextUtils.isEmpty(email)) {
-                    mEmail.setError("Email  Required..",null);
+                    mEmail.setError("Chưa nhập email..",null);
                     return;
                 }
                 if (TextUtils.isEmpty(pass)) {
-                    mPass.setError("Password Required..",null);
+                    mPass.setError("Chưa nhập mật khẩu..",null);
                     return;
                 }
-                mDialog.setMessage("Logging in..");
+                mDialog.setMessage("Đang đăng nhập..");
                 mDialog.show();
 
                 mAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -133,7 +133,7 @@ private FirebaseAuth mAuth;
                         else
                         {
                             mDialog.dismiss();
-                            Toast.makeText(getApplicationContext(),"Login Failed..",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"Đăng nhập thất bại..",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
