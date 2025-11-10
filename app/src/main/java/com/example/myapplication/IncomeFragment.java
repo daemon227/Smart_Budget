@@ -72,10 +72,11 @@ public class IncomeFragment extends Fragment {
         View myview=inflater.inflate(R.layout.fragment_income, container, false);
         mAuth=FirebaseAuth.getInstance();
         FirebaseUser mUser=mAuth.getCurrentUser();
-        if(mAuth!=null) {
+        if (mUser != null) {
             String uid = mUser.getUid();
-
-            mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
+            mIncomeDatabase = FirebaseDatabase.getInstance().getReference()
+                    .child("IncomeData")
+                    .child(uid);
         }
 
         incomeTotalSum=myview.findViewById(R.id.income_txt_result);
@@ -90,17 +91,14 @@ public class IncomeFragment extends Fragment {
 
         mIncomeDatabase.addValueEventListener(new ValueEventListener() {
 
-            int totalvalue=0;
-
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int totalvalue=0;
                 for(DataSnapshot mysnapshot:dataSnapshot.getChildren()){
-                    Data data=mysnapshot.getValue(Data.class);
-                    totalvalue=totalvalue+data.getAmount();
-                    String stTotalvalue=String.valueOf(totalvalue);
-                    incomeTotalSum.setText(stTotalvalue+"");
-
+                    Data data = mysnapshot.getValue(Data.class);
+                    if (data != null)
+                        totalvalue += data.getAmount();
                 }
-
+                incomeTotalSum.setText(String.valueOf(totalvalue));
             }
 
             @Override
@@ -233,6 +231,38 @@ public class IncomeFragment extends Fragment {
         btnDelete=myview.findViewById(R.id.btnuPD_Delete);
 
         AlertDialog dialog=mydialog.create();
+        spinnerCategory = myview.findViewById(R.id.spinner_category);
+
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                listCategory
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+
+
+        // Set giá trị hiện tại của spinner theo category của model
+        int selectedIndex = 0;
+        for (int i = 0; i < listCategory.size(); i++) {
+            if (listCategory.get(i).getName().equals(type)) { // type là tên category cũ
+                selectedIndex = i;
+                break;
+            }
+        }
+        spinnerCategory.setSelection(selectedIndex);
+        selectedCategory = listCategory.get(selectedIndex);
+
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = (Category) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,22 +294,7 @@ public class IncomeFragment extends Fragment {
             }
         });
         dialog.show();
-        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_spinner_item,
-                listCategory
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(adapter);
-        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedCategory = (Category) parent.getItemAtPosition(position);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
 
 
     }

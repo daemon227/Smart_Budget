@@ -84,18 +84,16 @@ public class ExpenseFragment extends Fragment {
 
         mExpenseDatabase.addValueEventListener(new ValueEventListener() {
 
-            int totalvalue=0;
-
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot mysnapshot:dataSnapshot.getChildren()){
-                    Data data=mysnapshot.getValue(Data.class);
-                    totalvalue=totalvalue+data.getAmount();
-                    String stTotalvalue=String.valueOf(totalvalue);
-                    expenseTotalSum.setText(stTotalvalue+"");
-
+                int totalvalue = 0;
+                for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
+                    Data data = mysnapshot.getValue(Data.class);
+                    if (data != null)
+                        totalvalue += data.getAmount();
                 }
-
+                expenseTotalSum.setText(String.valueOf(totalvalue));
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -197,10 +195,6 @@ public class ExpenseFragment extends Fragment {
         //edtType = myview.findViewById(R.id.spinner_category);
         edtNote = myview.findViewById(R.id.note_edt);
 
-        //Set data to edit text..
-        //edtType.setText(type);
-        //edtType.setSelection(type.length());
-
         edtNote.setText(note);
         edtNote.setSelection(note.length());
 
@@ -212,23 +206,53 @@ public class ExpenseFragment extends Fragment {
 
         AlertDialog dialog = mydialog.create();
 
+        spinnerCategory = myview.findViewById(R.id.spinner_category);
+
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                listCategory
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+
+        // Set giá trị hiện tại của spinner theo category của model
+        int selectedIndex = 0;
+        for (int i = 0; i < listCategory.size(); i++) {
+            if (listCategory.get(i).getName().equals(type)) { // type là tên category cũ
+                selectedIndex = i;
+                break;
+            }
+        }
+        spinnerCategory.setSelection(selectedIndex);
+        selectedCategory = listCategory.get(selectedIndex);
+
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = (Category) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //type = edtType.getText().toString().trim();
                 note = edtNote.getText().toString().trim();
-
                 String mdAmount = String.valueOf(amount);
                 mdAmount = edtAmount.getText().toString().trim();
-
+                if (mdAmount.isEmpty()) {
+                    edtAmount.setError("Vui lòng nhập số tiền");
+                    return;
+                }
                 int myAmount = Integer.parseInt(mdAmount);
 
                 String mDate = DateFormat.getDateInstance().format(new Date());
-
                 Data data = new Data(myAmount, selectedCategory, note, post_key, mDate);
-
                 mExpenseDatabase.child(post_key).setValue(data);
-
                 dialog.dismiss();
             }
         });
@@ -242,21 +266,5 @@ public class ExpenseFragment extends Fragment {
             }
         });
         dialog.show();
-        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_spinner_item,
-                listCategory
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(adapter);
-        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedCategory = (Category) parent.getItemAtPosition(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
 }
