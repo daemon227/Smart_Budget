@@ -79,12 +79,12 @@
                     android:layout_margin="10dp"
                     android:layout_height="wrap_content">
 
-                    <EditText
+                    <Spinner
+                        android:id="@+id/spinner_category"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/type_edt"
-                        android:textColor="@color/black"
-                        />
+                        android:spinnerMode="dropdown"
+                        android:backgroundTint="@color/black" />
 
                 </RelativeLayout>
             </LinearLayout>
@@ -145,7 +145,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/yellow"
                         android:backgroundTint="@color/yellow"
-                        android:text="Hủy"
+                        android:text="Xóa"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:textColor="@color/black" />
 

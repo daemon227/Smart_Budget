@@ -9,16 +9,16 @@
         android:title="Thu nhập"
         android:icon="@drawable/ic_income"
         ></item>
-    <item android:id="@+id/income_search"
-        android:title="Tìm thu nhập"
-        android:icon="@drawable/search_income"
-        ></item>
+<!--    <item android:id="@+id/income_search"-->
+<!--        android:title="Tìm thu nhập"-->
+<!--        android:icon="@drawable/search_income"-->
+<!--        ></item>-->
     <item android:id="@+id/expense"
         android:title="Chi phí"
         android:icon="@drawable/ic_expense">
     </item>
-    <item android:id="@+id/expense_search"
-        android:title="Tìm chi phí"
-        android:icon="@drawable/search_expense"
-        ></item>
+<!--    <item android:id="@+id/expense_search"-->
+<!--        android:title="Tìm chi phí"-->
+<!--        android:icon="@drawable/search_expense"-->
+<!--        ></item>-->
 </menu>

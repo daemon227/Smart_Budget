@@ -128,7 +128,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                         bottomNavigationView.setItemBackgroundResource(R.color.income_color);
                         return true;
 
-                    case R.id.income_search:
+                    case R.id.search_income:
                         Intent intent=new Intent(getApplicationContext(),searchdata.class);
                         startActivity(intent);
                         bottomNavigationView.setItemBackgroundResource(R.color.expense_color);
@@ -139,7 +139,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                         bottomNavigationView.setItemBackgroundResource(R.color.expense_color);
                         return true;
 
-                    case R.id.expense_search:
+                    case R.id.search_expense:
                         Intent intent1=new Intent(getApplicationContext(),searchdata2.class);
                         startActivity(intent1);
                         bottomNavigationView.setItemBackgroundResource(R.color.expense_color);

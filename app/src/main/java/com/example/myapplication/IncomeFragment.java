@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Model.Category;
 import com.example.myapplication.Model.Data;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,7 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class IncomeFragment extends Fragment {
@@ -54,6 +60,11 @@ public class IncomeFragment extends Fragment {
     private int amount;
 
     private  String post_key;
+    Spinner spinnerCategory;
+    Category selectedCategory;
+    List<Category> listCategory = new ArrayList<>();
+
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -117,7 +128,7 @@ public class IncomeFragment extends Fragment {
                     @Override
                     protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Data model) {
 
-                        holder.setType(model.getType());
+                        holder.setType(model.getType().getName());
                         holder.setNote(model.getNote());
                         holder.setDate(model.getDate());
                         holder.setAmount(model.getAmount());
@@ -125,7 +136,7 @@ public class IncomeFragment extends Fragment {
                         holder.mView.setOnClickListener(v -> {
                             post_key = getRef(position).getKey();
 
-                            type   = model.getType();
+                            type   = model.getType().getName();
                             note   = model.getNote();
                             amount = model.getAmount();
 
@@ -192,18 +203,25 @@ public class IncomeFragment extends Fragment {
 
     private void updateDataItem()
     {
+        listCategory.clear();
+        listCategory.add(new Category("001", "Lương"));
+        listCategory.add(new Category("002", "Tiền thưởng"));
+        listCategory.add(new Category("003", "Bán hàng"));
+        listCategory.add(new Category("004", "Khác"));
+
         AlertDialog.Builder mydialog=new AlertDialog.Builder(getActivity());
         LayoutInflater inflater=LayoutInflater.from(getActivity());
         View myview=inflater.inflate(R.layout.update_data_item,null);
         mydialog.setView(myview);
+        spinnerCategory = myview.findViewById(R.id.spinner_category);
 
         edtAmount=myview.findViewById(R.id.amount_edt);
-        edtType=myview.findViewById(R.id.type_edt);
+//        edtType=myview.findViewById(R.id.type_edt);
         edtNote=myview.findViewById(R.id.note_edt);
 
         //Set data to edit text..
-        edtType.setText(type);
-        edtType.setSelection(type.length());
+        //edtType.setText(type);
+        //edtType.setSelection(type.length());
 
         edtNote.setText(note);
         edtNote.setSelection(note.length());
@@ -219,7 +237,7 @@ public class IncomeFragment extends Fragment {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type=edtType.getText().toString().trim();
+                //type=edtType.getText().toString().trim();
                 note=edtNote.getText().toString().trim();
 
                 String mdAmount=String.valueOf(amount);
@@ -229,7 +247,7 @@ public class IncomeFragment extends Fragment {
 
                 String mDate= DateFormat.getDateInstance().format(new Date());
 
-                Data data=new Data(myAmount,type,note,post_key,mDate);
+                Data data=new Data(myAmount,selectedCategory,note,post_key,mDate);
 
                 mIncomeDatabase.child(post_key).setValue(data);
 
@@ -246,5 +264,23 @@ public class IncomeFragment extends Fragment {
             }
         });
         dialog.show();
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                listCategory
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = (Category) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+
     }
 }

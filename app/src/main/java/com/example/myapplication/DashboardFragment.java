@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Model.Category;
 import com.example.myapplication.Model.Data;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -55,6 +57,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class DashboardFragment extends Fragment {
@@ -94,6 +97,9 @@ public class DashboardFragment extends Fragment {
 
     private RecyclerView mRecyclerIncome;
     private RecyclerView mRecyclerExpense;
+    Spinner spinnerCategory;
+    Category selectedCategory;
+    List<Category> listCategory = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -372,6 +378,11 @@ public class DashboardFragment extends Fragment {
     }
 
     public void incomeDataInsert(){
+        listCategory.clear();
+        listCategory.add(new Category("001", "Lương"));
+        listCategory.add(new Category("002", "Tiền thưởng"));
+        listCategory.add(new Category("003", "Bán hàng"));
+        listCategory.add(new Category("004", "Khác"));
         AlertDialog.Builder mydialog=new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater=LayoutInflater.from(getActivity());
@@ -381,16 +392,33 @@ public class DashboardFragment extends Fragment {
         AlertDialog dialog=mydialog.create();
 
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
-        EditText edtType=myviewm.findViewById(R.id.type_edt);
+        spinnerCategory = myviewm.findViewById(R.id.spinner_category);
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
         Button btnCancel=myviewm.findViewById(R.id.btnCancel);
 
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                listCategory
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = (Category) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
+                //String type=edtType.getText().toString().trim();
                 String amount=edtAmount.getText().toString().trim();
                 String note=edtNote.getText().toString().trim();
 
@@ -399,10 +427,10 @@ public class DashboardFragment extends Fragment {
                     return;
                 }
                 int ouramountint=Integer.parseInt(amount);
-                if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
-                }
+//                if(TextUtils.isEmpty(type)){
+//                    edtType.setError("Required Field..");
+//                    return;
+//                }
                 if(TextUtils.isEmpty(note)){
                     edtNote.setError("Required Field..");
                     return;
@@ -411,7 +439,7 @@ public class DashboardFragment extends Fragment {
                 if(mAuth.getCurrentUser()!=null) {
                     String id = mIncomeDatabase.push().getKey();
                     String mDate = DateFormat.getDateInstance().format(new Date());
-                    Data data = new Data(ouramountint, type, note, id, mDate);
+                    Data data = new Data(ouramountint, selectedCategory, note, id, mDate);
 
                     mIncomeDatabase.child(id).setValue(data);
                     Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
@@ -441,16 +469,33 @@ public class DashboardFragment extends Fragment {
         dialog.setCancelable(false);
 
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
-        EditText edtType=myviewm.findViewById(R.id.type_edt);
+        spinnerCategory = myviewm.findViewById(R.id.spinner_category);
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
         Button btnCancel=myviewm.findViewById(R.id.btnCancel);
 
+        ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+                getActivity(),
+                android.R.layout.simple_spinner_item,
+                listCategory
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedCategory = (Category) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
+                //String type=edtType.getText().toString().trim();
                 String amount=edtAmount.getText().toString().trim();
                 String note=edtNote.getText().toString().trim();
 
@@ -459,10 +504,10 @@ public class DashboardFragment extends Fragment {
                     return;
                 }
                 int ouramountinte=Integer.parseInt(amount);
-                if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
-                }
+//                if(TextUtils.isEmpty(type)){
+//                    edtType.setError("Required Field..");
+//                    return;
+//                }
                 if(TextUtils.isEmpty(note)){
                     edtNote.setError("Required Field..");
                     return;
@@ -470,7 +515,7 @@ public class DashboardFragment extends Fragment {
                 if(mAuth.getCurrentUser()!=null) {
                     String id = mExpenseDatabase.push().getKey();
                     String mDate = DateFormat.getDateInstance().format(new Date());
-                    Data data = new Data(ouramountinte, type, note, id, mDate);
+                    Data data = new Data(ouramountinte, selectedCategory, note, id, mDate);
 
                     mExpenseDatabase.child(id).setValue(data);
                     Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
@@ -509,7 +554,7 @@ public class DashboardFragment extends Fragment {
                 new FirebaseRecyclerAdapter<Data, IncomeViewHolder>(incomeOptions) {
                     @Override
                     protected void onBindViewHolder(@NonNull IncomeViewHolder holder, int position, @NonNull Data model) {
-                        holder.setIncomeType(model.getType());
+                        holder.setIncomeType(model.getType().getName());
                         holder.setIncomeAmount(model.getAmount());
                         holder.setIncomeDate(model.getDate());
                     }
@@ -537,7 +582,7 @@ public class DashboardFragment extends Fragment {
                 new FirebaseRecyclerAdapter<Data, ExpenseViewHolder>(expenseOptions) {
                     @Override
                     protected void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position, @NonNull Data model) {
-                        holder.setExpenseType(model.getType());
+                        holder.setExpenseType(model.getType().getName());
                         holder.setExpenseAmount(model.getAmount());
                         holder.setExpenseDate(model.getDate());
                     }
