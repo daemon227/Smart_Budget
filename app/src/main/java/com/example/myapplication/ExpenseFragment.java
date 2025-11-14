@@ -63,17 +63,21 @@ public class ExpenseFragment extends Fragment {
     private ValueEventListener expenseListener;
     private FirebaseRecyclerAdapter<Data, MyViewHolder> adapter;
 
+    private static final int MAX_RECYCLER_ITEMS = 50;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myview=inflater.inflate(R.layout.fragment_expense, container, false);
         mAuth=FirebaseAuth.getInstance();
         FirebaseUser mUser=mAuth.getCurrentUser();
-        if(mAuth!=null) {
-            String uid = mUser.getUid();
-
-            mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+        
+        if (mUser == null) {
+            return myview;
         }
+
+        String uid = mUser.getUid();
+        mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("Expense").child(uid);
 
         expenseTotalSum=myview.findViewById(R.id.expense_txt_result);
         recyclerView=myview.findViewById(R.id.recycler_id_expense);
@@ -84,9 +88,9 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-
+        // Khởi tạo listener TRƯỚC khi sử dụng
         expenseListener = new ValueEventListener() {
-
+            @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int totalvalue = 0;
                 for (DataSnapshot mysnapshot : dataSnapshot.getChildren()) {
@@ -94,16 +98,18 @@ public class ExpenseFragment extends Fragment {
                     if (data != null)
                         totalvalue += data.getAmount();
                 }
-                expenseTotalSum.setText(String.valueOf(totalvalue));
+                if (expenseTotalSum != null) {
+                    expenseTotalSum.setText(String.valueOf(totalvalue));
+                }
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         };
-        mExpenseDatabase.addValueEventListener(expenseListener);
+        
+        // Thêm listener với giới hạn dữ liệu
+        mExpenseDatabase.limitToLast(MAX_RECYCLER_ITEMS).addValueEventListener(expenseListener);
 
         return  myview;
     }
@@ -112,9 +118,13 @@ public class ExpenseFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        if (mExpenseDatabase == null) {
+            return;
+        }
+
         FirebaseRecyclerOptions<Data> options =
                 new FirebaseRecyclerOptions.Builder<Data>()
-                        .setQuery(mExpenseDatabase, Data.class)
+                        .setQuery(mExpenseDatabase.limitToLast(MAX_RECYCLER_ITEMS), Data.class)
                         .build();
 
         FirebaseRecyclerAdapter<Data, ExpenseFragment.MyViewHolder> adapter =
@@ -157,6 +167,28 @@ public class ExpenseFragment extends Fragment {
         if (mExpenseDatabase != null && expenseListener != null)
             mExpenseDatabase.removeEventListener(expenseListener);
         if (adapter != null) adapter.stopListening();
+    }
+    // Trong mỗi Fragment (ví dụ: ExpenseFragment.java)
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Giải phóng RecyclerView và Adapter
+        // Adapter thường giữ tham chiếu đến Context.
+        if (recyclerView != null) {
+            recyclerView.setAdapter(null); // Rất quan trọng!
+            recyclerView = null;
+        }
+
+        // Giải phóng các View lớn khác (ví dụ: Chart, Button, TextView...)
+        expenseTotalSum = null;
+        edtAmount = null;
+        edtNote = null;
+        spinnerCategory = null;
+
+        // 💡 Hành động mới: Nếu Fragment của bạn có tham chiếu đến các Bitmap/Drawable lớn,
+        // hãy đặt chúng thành null ở đây.
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
@@ -275,7 +307,6 @@ public class ExpenseFragment extends Fragment {
                 Data data = new Data(myAmount, selectedCategory, note, post_key, mDate);
                 mExpenseDatabase.child(post_key).setValue(data);
                 dialog.dismiss();
-                mExpenseDatabase.addListenerForSingleValueEvent(expenseListener);
             }
         });
 
@@ -290,7 +321,8 @@ public class ExpenseFragment extends Fragment {
                     })
                     .setNegativeButton("Hủy", null)
                     .show();
-            mExpenseDatabase.addListenerForSingleValueEvent(expenseListener);
         });
+        
+        dialog.show();
     }
 }

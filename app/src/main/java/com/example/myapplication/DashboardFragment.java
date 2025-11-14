@@ -66,8 +66,8 @@ public class DashboardFragment extends Fragment {
 
     private ValueEventListener totalsListener, barListener;
 
-    private static final int MAX_BAR_ENTRIES = 30;
-    private static final int MAX_RECYCLER_ITEMS = 50;
+    private static final int MAX_BAR_ENTRIES = 15;  // Giảm từ 30 xuống 15 để tránh OOM
+    private static final int MAX_RECYCLER_ITEMS = 30;  // Giảm từ 50 xuống 30 để tránh OOM
 
     private final SimpleDateFormat inputFormat = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
     private final SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
@@ -85,6 +85,13 @@ public class DashboardFragment extends Fragment {
 
         if (mExpenseDatabase != null && barListener != null)
             mExpenseDatabase.removeEventListener(barListener);
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Giải phóng View để không giữ tham chiếu Activity context
+        if (mRecyclerIncome != null) mRecyclerIncome.setAdapter(null);
+        // ... giải phóng các View khác
     }
 
     @Override
@@ -112,7 +119,15 @@ public class DashboardFragment extends Fragment {
         initViews(view);
         setupRecyclerViews();
         loadTotals();
-        loadBarChart();
+        
+        // Delay load BarChart để tránh OOM khi Fragment mới được tạo
+        if (view != null) {
+            view.post(() -> {
+                if (isAdded() && getActivity() != null && barChart != null) {
+                    loadBarChart();
+                }
+            });
+        }
 
         return view;
     }
@@ -178,8 +193,12 @@ public class DashboardFragment extends Fragment {
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         };
 
-        mIncomeDatabase.addValueEventListener(totalsListener);
-        mExpenseDatabase.addValueEventListener(totalsListener);
+        mIncomeDatabase.limitToLast(MAX_RECYCLER_ITEMS)
+                .addListenerForSingleValueEvent(totalsListener);
+
+        mExpenseDatabase.limitToLast(MAX_RECYCLER_ITEMS)
+                .addListenerForSingleValueEvent(totalsListener);
+
     }
 
     private void updateBalance() {

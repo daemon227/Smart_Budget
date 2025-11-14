@@ -47,6 +47,11 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     private ExpenseFragment expenseFragment;
 
     private FirebaseAuth mAuth;
+    
+    // Lưu references để remove listeners
+    private ValueEventListener userInfoListener;
+    private DatabaseReference mUserInfoDatabaseRef;
+    private NavigationView navigationView;
 
     ArrayList<HashMap<String,Object>> items;
     PackageManager pm;
@@ -72,7 +77,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView=findViewById(R.id.naView);
+        navigationView = findViewById(R.id.naView);
         navigationView.setNavigationItemSelectedListener(this);
 
         // ✅ FIX: Check user login first
@@ -86,30 +91,30 @@ public class first_home_page extends AppCompatActivity implements NavigationView
             finish(); // finish current activity
             return;
         }
-        dashboardFragment = new DashboardFragment();
-        incomeFragment = new IncomeFragment();
-        expenseFragment = new ExpenseFragment();
-        setFragment(dashboardFragment);
+        // Lazy load fragments - chỉ tạo khi cần để tránh OOM
+        setFragment(getDashboardFragment());
 
         // ✅ User tồn tại → lấy UID
         String uid = mUser.getUid();
-        DatabaseReference mUserInfoDatabase = FirebaseDatabase.getInstance().getReference()
+        mUserInfoDatabaseRef = FirebaseDatabase.getInstance().getReference()
                 .child("UserInfo").child(uid);
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        userInfoListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.child("Email").getValue() != null) {
                     String userEmail = dataSnapshot.child("Email").getValue().toString();
-                    TextView email=findViewById(R.id.user_email);
-                    email.setText(userEmail);
+                    TextView email = findViewById(R.id.user_email);
+                    if (email != null) {
+                        email.setText(userEmail);
+                    }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
-        mUserInfoDatabase.addListenerForSingleValueEvent(valueEventListener);
+        mUserInfoDatabaseRef.addListenerForSingleValueEvent(userInfoListener);
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -117,12 +122,12 @@ public class first_home_page extends AppCompatActivity implements NavigationView
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.dashboard:
-                        setFragment(dashboardFragment);
+                        setFragment(getDashboardFragment());
                         bottomNavigationView.setItemBackgroundResource(R.color.dashboard_color);
                         return true;
 
                     case R.id.income:
-                        setFragment(incomeFragment);
+                        setFragment(getIncomeFragment());
                         bottomNavigationView.setItemBackgroundResource(R.color.income_color);
                         return true;
 
@@ -133,7 +138,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                         return true;
 
                     case R.id.expense:
-                        setFragment(expenseFragment);
+                        setFragment(getExpenseFragment());
                         bottomNavigationView.setItemBackgroundResource(R.color.expense_color);
                         return true;
 
@@ -149,16 +154,10 @@ public class first_home_page extends AppCompatActivity implements NavigationView
             }
         });
 
-        items =new ArrayList<HashMap<String,Object>>();
-        pm = getPackageManager();
-        packs = pm.getInstalledPackages(0);
-        for (PackageInfo pi : packs)
-        {
-            HashMap<String, Object> map = new HashMap<String, Object>();
-            map.put("appName", pi.applicationInfo.loadLabel(pm));
-            map.put("packageName", pi.packageName);
-            items.add(map);
-        }
+        // Không load packages trong onCreate - sẽ lazy load khi cần
+        items = null;
+        pm = null;
+        packs = null;
 
     }
 
@@ -166,6 +165,28 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame,fragment);
         fragmentTransaction.commit();
+    }
+
+    // Lazy load fragments để tránh OOM khi khởi tạo Activity
+    private DashboardFragment getDashboardFragment() {
+        if (dashboardFragment == null) {
+            dashboardFragment = new DashboardFragment();
+        }
+        return dashboardFragment;
+    }
+
+    private IncomeFragment getIncomeFragment() {
+        if (incomeFragment == null) {
+            incomeFragment = new IncomeFragment();
+        }
+        return incomeFragment;
+    }
+
+    private ExpenseFragment getExpenseFragment() {
+        if (expenseFragment == null) {
+            expenseFragment = new ExpenseFragment();
+        }
+        return expenseFragment;
     }
 
     @Override
@@ -180,18 +201,18 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     }
 
     public void displaySelectedListener(int itemId){
-        Fragment fragment=null;
+        Fragment fragment = null;
         switch(itemId){
             case R.id.profile:
                 startActivity(new Intent(getApplicationContext(),Profile.class));
                 break;
 
             case R.id.dashboard:
-                fragment=new DashboardFragment();
+                fragment= getDashboardFragment();
                 break;
 
             case R.id.income:
-                fragment=new IncomeFragment();
+                fragment= getIncomeFragment();
                 break;
 
             case R.id.search_income:
@@ -199,7 +220,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 break;
 
             case R.id.expense:
-                fragment=new ExpenseFragment();
+                fragment= getExpenseFragment();
                 break;
 
             case R.id.search_expense:
@@ -211,36 +232,48 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 break;
 
             case R.id.calculator:
-                int d=0;
-                if(items.size()>=1)
-                {
-                    int j=0;
-                    for(j=0;j<items.size();j++){
+                // Lazy load packages chỉ khi cần thiết
+                if (items == null || pm == null) {
+                    items = new ArrayList<HashMap<String,Object>>();
+                    pm = getPackageManager();
+                    packs = pm.getInstalledPackages(0);
+                    for (PackageInfo pi : packs) {
+                        HashMap<String, Object> map = new HashMap<String, Object>();
+                        map.put("appName", pi.applicationInfo.loadLabel(pm));
+                        map.put("packageName", pi.packageName);
+                        items.add(map);
+                    }
+                }
+                
+                int d = 0;
+                boolean found = false;
+                if (items != null && items.size() >= 1) {
+                    for (int j = 0; j < items.size(); j++) {
                         String AppName = (String) items.get(j).get("appName");
-                        if(AppName.matches("Calculator"))
-                        {
-                            d=j;
+                        if (AppName != null && AppName.matches("Calculator")) {
+                            d = j;
+                            found = true;
                             break;
                         }
                     }
-                    String packageName = (String) items.get(d).get("packageName");
-
-                    Intent i = pm.getLaunchIntentForPackage(packageName);
-                    if (i != null)
-                    {
-                        Toast.makeText(getApplicationContext(),"Opening Calculator..",Toast.LENGTH_SHORT).show();
-                        startActivity(i);
+                    if (found) {
+                        String packageName = (String) items.get(d).get("packageName");
+                        Intent i = pm.getLaunchIntentForPackage(packageName);
+                        if (i != null) {
+                            Toast.makeText(getApplicationContext(),"Opening Calculator..",Toast.LENGTH_SHORT).show();
+                            startActivity(i);
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
+                            startActivity(intent);
+                        }
+                    } else {
+                        Intent intent1 = new Intent(Intent.ACTION_VIEW);
+                        intent1.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
+                        startActivity(intent1);
                     }
-                    else
-                    {
-                        Intent intent=new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
-                        startActivity(intent);
-                    }
-                }
-                else
-                {
-                    Intent intent1=new Intent(Intent.ACTION_VIEW);
+                } else {
+                    Intent intent1 = new Intent(Intent.ACTION_VIEW);
                     intent1.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
                     startActivity(intent1);
                 }
@@ -284,5 +317,39 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         displaySelectedListener(item.getItemId());
         return true;
+    }
+    // Trong first_home_page.java
+
+    // ... thêm vào cuối class
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // addListenerForSingleValueEvent tự động cleanup, nhưng vẫn cắt reference để an toàn
+        mUserInfoDatabaseRef = null;
+        userInfoListener = null;
+
+        // Remove NavigationView listener
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(null);
+            navigationView = null;
+        }
+
+        // Cắt tham chiếu của BottomNavigationView
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setOnNavigationItemSelectedListener(null);
+            bottomNavigationView = null;
+        }
+
+        // Cắt tham chiếu các Fragment
+        dashboardFragment = null;
+        incomeFragment = null;
+        expenseFragment = null;
+
+        // Cắt tham chiếu của các đối tượng liên quan đến hệ thống
+        pm = null;
+        packs = null;
+        items = null;
+        frameLayout = null;
     }
 }

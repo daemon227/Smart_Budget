@@ -63,8 +63,9 @@ public class IncomeFragment extends Fragment {
     Spinner spinnerCategory;
     Category selectedCategory;
     List<Category> listCategory = new ArrayList<>();
+    private ValueEventListener incomeListener;
 
-
+    private static final int MAX_RECYCLER_ITEMS = 50;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,12 +73,13 @@ public class IncomeFragment extends Fragment {
         View myview=inflater.inflate(R.layout.fragment_income, container, false);
         mAuth=FirebaseAuth.getInstance();
         FirebaseUser mUser=mAuth.getCurrentUser();
-        if (mUser != null) {
-            String uid = mUser.getUid();
-            mIncomeDatabase = FirebaseDatabase.getInstance().getReference()
-                    .child("IncomeData")
-                    .child(uid);
+        
+        if (mUser == null) {
+            return myview;
         }
+
+        String uid = mUser.getUid();
+        mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("Income").child(uid);
 
         incomeTotalSum=myview.findViewById(R.id.income_txt_result);
         recyclerView=myview.findViewById(R.id.recycler_id_income);
@@ -88,24 +90,28 @@ public class IncomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
 
-
-        mIncomeDatabase.addValueEventListener(new ValueEventListener() {
-
+        // Khởi tạo listener TRƯỚC khi sử dụng
+        incomeListener = new ValueEventListener() {
+            @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int totalvalue=0;
-                for(DataSnapshot mysnapshot:dataSnapshot.getChildren()){
+                int totalvalue = 0;
+                for(DataSnapshot mysnapshot : dataSnapshot.getChildren()){
                     Data data = mysnapshot.getValue(Data.class);
                     if (data != null)
                         totalvalue += data.getAmount();
                 }
-                incomeTotalSum.setText(String.valueOf(totalvalue));
+                if (incomeTotalSum != null) {
+                    incomeTotalSum.setText(String.valueOf(totalvalue));
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
-        });
+        };
+        
+        // Thêm listener với giới hạn dữ liệu
+        mIncomeDatabase.limitToLast(MAX_RECYCLER_ITEMS).addValueEventListener(incomeListener);
 
 
         return  myview;
@@ -115,47 +121,45 @@ public class IncomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        if (mIncomeDatabase == null) {
+            return;
+        }
+
         FirebaseRecyclerOptions<Data> options =
                 new FirebaseRecyclerOptions.Builder<Data>()
-                        .setQuery(mIncomeDatabase, Data.class)
+                        .setQuery(mIncomeDatabase.limitToLast(MAX_RECYCLER_ITEMS), Data.class)
                         .build();
 
-        FirebaseRecyclerAdapter<Data, MyViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Data, MyViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Data, MyViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Data model) {
 
-                    @Override
-                    protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Data model) {
+                holder.setType(model.getType().getName());
+                holder.setNote(model.getNote());
+                holder.setDate(model.getDate());
+                holder.setAmount((int) model.getAmount());
 
-                        holder.setType(model.getType().getName());
-                        holder.setNote(model.getNote());
-                        holder.setDate(model.getDate());
-                        holder.setAmount((int) model.getAmount());
+                holder.mView.setOnClickListener(v -> {
+                    post_key = getRef(position).getKey();
 
-                        holder.mView.setOnClickListener(v -> {
-                            post_key = getRef(position).getKey();
+                    type   = model.getType().getName();
+                    note   = model.getNote();
+                    amount = model.getAmount();
 
-                            type   = model.getType().getName();
-                            note   = model.getNote();
-                            amount = model.getAmount();
-
-                            updateDataItem();
-                        });
-                    }
-
-                    @NonNull
-                    @Override
-                    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.income_recycler_data, parent, false);
-                        return new MyViewHolder(view);
-                    }
-                };
+                    updateDataItem();
+                });
+            }
+            @NonNull
+            @Override
+            public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.income_recycler_data, parent, false);
+                return new MyViewHolder(view);
+            }
+        };
 
         recyclerView.setAdapter(adapter);
         adapter.startListening();
-
-        // Lưu lại adapter nếu bạn dùng stopListening() trong onStop()
-        this.adapter = adapter;
     }
 
     private FirebaseRecyclerAdapter<Data, MyViewHolder> adapter;
@@ -166,6 +170,31 @@ public class IncomeFragment extends Fragment {
         if (adapter != null) {
             adapter.stopListening();
         }
+        if (mIncomeDatabase != null && incomeListener != null) {
+            mIncomeDatabase.removeEventListener(incomeListener);
+        }
+    }
+    // Trong mỗi Fragment (ví dụ: ExpenseFragment.java)
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Giải phóng RecyclerView và Adapter
+        // Adapter thường giữ tham chiếu đến Context.
+        if (recyclerView != null) {
+            recyclerView.setAdapter(null); // Rất quan trọng!
+            recyclerView = null;
+        }
+
+        // Giải phóng các View lớn khác (ví dụ: Chart, Button, TextView...)
+        incomeTotalSum = null;
+        edtAmount = null;
+        edtNote = null;
+        spinnerCategory = null;
+
+        // 💡 Hành động mới: Nếu Fragment của bạn có tham chiếu đến các Bitmap/Drawable lớn,
+        // hãy đặt chúng thành null ở đây.
     }
 
 
