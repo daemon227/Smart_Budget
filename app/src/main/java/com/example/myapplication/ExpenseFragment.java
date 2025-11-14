@@ -30,9 +30,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class ExpenseFragment extends Fragment {
@@ -52,13 +54,14 @@ public class ExpenseFragment extends Fragment {
 
     private String type;
     private String note;
-    private int amount;
+    private float amount;
 
     private  String post_key;
     Spinner spinnerCategory;
     Category selectedCategory;
     List<Category> listCategory = new ArrayList<>();
-
+    private ValueEventListener expenseListener;
+    private FirebaseRecyclerAdapter<Data, MyViewHolder> adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,7 +85,7 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
 
-        mExpenseDatabase.addValueEventListener(new ValueEventListener() {
+        expenseListener = new ValueEventListener() {
 
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int totalvalue = 0;
@@ -99,8 +102,8 @@ public class ExpenseFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-
+        };
+        mExpenseDatabase.addValueEventListener(expenseListener);
 
         return  myview;
     }
@@ -123,7 +126,7 @@ public class ExpenseFragment extends Fragment {
                         holder.setType(model.getType().getName());
                         holder.setNote(model.getNote());
                         holder.setDate(model.getDate());
-                        holder.setAmount(model.getAmount());
+                        holder.setAmount((int) model.getAmount());
 
                         holder.mView.setOnClickListener(v -> {
                             post_key = getRef(position).getKey();
@@ -148,8 +151,13 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         adapter.startListening();
     }
-
-
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mExpenseDatabase != null && expenseListener != null)
+            mExpenseDatabase.removeEventListener(expenseListener);
+        if (adapter != null) adapter.stopListening();
+    }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
@@ -175,17 +183,20 @@ public class ExpenseFragment extends Fragment {
         }
         private void setAmount(int amount){
             TextView mAmount=mView.findViewById(R.id.amount_txt_expense);
-            String stamount=String.valueOf(amount);
-            mAmount.setText("-"+stamount);
+            //String stamount=String.valueOf(amount);
+            //mAmount.setText("-"+stamount);
+            NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
+            mAmount.setText("-" + nf.format(amount));
         }
     }
 
     private void updateDataItem() {
         listCategory.clear();
-        listCategory.add(new Category("001", "Lương"));
-        listCategory.add(new Category("002", "Tiền thưởng"));
-        listCategory.add(new Category("003", "Bán hàng"));
+        listCategory.add(new Category("001", "Ăn uống"));
+        listCategory.add(new Category("002", "Đi lại"));
+        listCategory.add(new Category("003", "Mua sắm"));
         listCategory.add(new Category("004", "Khác"));
+
         AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View myview = inflater.inflate(R.layout.update_data_item, null);
@@ -207,8 +218,11 @@ public class ExpenseFragment extends Fragment {
         AlertDialog dialog = mydialog.create();
 
         spinnerCategory = myview.findViewById(R.id.spinner_category);
+        if (getActivity() == null || mExpenseDatabase == null) return;
+
 
         ArrayAdapter<Category> adapter = new ArrayAdapter<>(
+
                 getActivity(),
                 android.R.layout.simple_spinner_item,
                 listCategory
@@ -248,23 +262,35 @@ public class ExpenseFragment extends Fragment {
                     edtAmount.setError("Vui lòng nhập số tiền");
                     return;
                 }
-                int myAmount = Integer.parseInt(mdAmount);
+                int myAmount;
+                try {
+                    myAmount = Integer.parseInt(mdAmount);
+                } catch (NumberFormatException e) {
+                    edtAmount.setError("Số tiền không hợp lệ!");
+                    return;
+                }
+
 
                 String mDate = DateFormat.getDateInstance().format(new Date());
                 Data data = new Data(myAmount, selectedCategory, note, post_key, mDate);
                 mExpenseDatabase.child(post_key).setValue(data);
                 dialog.dismiss();
+                mExpenseDatabase.addListenerForSingleValueEvent(expenseListener);
             }
         });
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mExpenseDatabase.child(post_key).removeValue();
 
-                dialog.dismiss();
-            }
+        btnDelete.setOnClickListener(v -> {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Xác nhận")
+                    .setMessage("Bạn có chắc muốn xóa mục này không?")
+                    .setPositiveButton("Xóa", (d, w) -> {
+                        mExpenseDatabase.child(post_key).removeValue();
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+            mExpenseDatabase.addListenerForSingleValueEvent(expenseListener);
         });
-        dialog.show();
     }
 }

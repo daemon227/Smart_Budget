@@ -32,6 +32,12 @@ public class change_password extends AppCompatActivity {
 
         mAuth= FirebaseAuth.getInstance();
         FirebaseUser user=mAuth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(change_password.this, home_screen.class));
+            finish();
+            return;
+        }
 
         changePass=findViewById(R.id.btnChange);
 
@@ -74,6 +80,7 @@ public class change_password extends AppCompatActivity {
                                             Toast.makeText(change_password.this,"Đổi mật khẩu thành công..",Toast.LENGTH_LONG).show();
                                             Intent intent=new Intent(change_password.this,home_screen.class);
                                             startActivity(intent);
+                                            finish();
                                         }
                                         else
                                         {

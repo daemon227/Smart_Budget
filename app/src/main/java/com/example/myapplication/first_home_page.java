@@ -75,23 +75,21 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         NavigationView navigationView=findViewById(R.id.naView);
         navigationView.setNavigationItemSelectedListener(this);
 
-        dashboardFragment=new DashboardFragment();
-        incomeFragment=new IncomeFragment();
-        expenseFragment=new ExpenseFragment();
-        setFragment(dashboardFragment);
-
-
         // ✅ FIX: Check user login first
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser mUser = mAuth.getCurrentUser();
 
         if (mUser == null) {
-            // Chưa login → quay lại LoginActivity/Home screen
-            Intent intent = new Intent(first_home_page.this, home_screen.class); // thay bằng activity login của bạn
+            Intent intent = new Intent(first_home_page.this, home_screen.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish();
+            finish(); // finish current activity
             return;
         }
+        dashboardFragment = new DashboardFragment();
+        incomeFragment = new IncomeFragment();
+        expenseFragment = new ExpenseFragment();
+        setFragment(dashboardFragment);
 
         // ✅ User tồn tại → lấy UID
         String uid = mUser.getUid();

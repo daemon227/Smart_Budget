@@ -57,7 +57,7 @@ public class IncomeFragment extends Fragment {
     //Data item value
     private String type;
     private String note;
-    private int amount;
+    private float amount;
 
     private  String post_key;
     Spinner spinnerCategory;
@@ -129,7 +129,7 @@ public class IncomeFragment extends Fragment {
                         holder.setType(model.getType().getName());
                         holder.setNote(model.getNote());
                         holder.setDate(model.getDate());
-                        holder.setAmount(model.getAmount());
+                        holder.setAmount((int) model.getAmount());
 
                         holder.mView.setOnClickListener(v -> {
                             post_key = getRef(position).getKey();
@@ -207,6 +207,7 @@ public class IncomeFragment extends Fragment {
         listCategory.add(new Category("003", "Bán hàng"));
         listCategory.add(new Category("004", "Khác"));
 
+        if (getActivity() == null || !isAdded()) return;
         AlertDialog.Builder mydialog=new AlertDialog.Builder(getActivity());
         LayoutInflater inflater=LayoutInflater.from(getActivity());
         View myview=inflater.inflate(R.layout.update_data_item,null);
@@ -285,17 +286,18 @@ public class IncomeFragment extends Fragment {
             }
         });
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mIncomeDatabase.child(post_key).removeValue();
-
-                dialog.dismiss();
-            }
+        btnDelete.setOnClickListener(v -> {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Xác nhận xóa")
+                    .setMessage("Bạn có chắc muốn xóa mục thu nhập này không?")
+                    .setPositiveButton("Xóa", (d, w) -> {
+                        mIncomeDatabase.child(post_key).removeValue();
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
         });
         dialog.show();
-
-
 
     }
 }

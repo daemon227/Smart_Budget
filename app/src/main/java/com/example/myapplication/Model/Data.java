@@ -4,12 +4,12 @@ package com.example.myapplication.Model;
 
 public class Data {
     //extends RecyclerView.ViewHolder
-    private int amount;
+    private float amount;
     private Category type;
     private String note;
     private String id;
 
-    public Data(int amount, Category type, String note, String id, String date)
+    public Data(float amount, Category type, String note, String id, String date)
     {
 
         this.amount = amount;
@@ -25,7 +25,7 @@ public class Data {
     public Data(){}
 
 
-    public int getAmount(){return amount;}
+    public float getAmount(){return amount;}
 
     public void setAmount(int amount) {
         this.amount = amount;
