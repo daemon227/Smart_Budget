@@ -2,10 +2,8 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,27 +24,17 @@ import com.example.myapplication.Model.Category;
 import com.example.myapplication.Model.Data;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DashboardFragment extends Fragment {
 
-    private BarChart barChart;
-    private List<BarEntry> barEntries = new ArrayList<>();
-    private List<String> dateLabels = new ArrayList<>();
+    private TextView statisticsText;
 
     private FloatingActionButton fabMain, fabIncomeBtn, fabExpenseBtn;
     private TextView fabIncomeTxt, fabExpenseTxt;
@@ -64,13 +52,9 @@ public class DashboardFragment extends Fragment {
     private Category selectedCategory;
     private List<Category> listCategory = new ArrayList<>();
 
-    private ValueEventListener totalsListener, barListener;
+    private ValueEventListener totalsListener, statisticsListener;
 
-    private static final int MAX_BAR_ENTRIES = 15;  // Giảm từ 30 xuống 15 để tránh OOM
     private static final int MAX_RECYCLER_ITEMS = 30;  // Giảm từ 50 xuống 30 để tránh OOM
-
-    private final SimpleDateFormat inputFormat = new SimpleDateFormat("MMM d, yyyy", Locale.ENGLISH);
-    private final SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
 
     private boolean isShowingWarning = false;
 
@@ -83,8 +67,8 @@ public class DashboardFragment extends Fragment {
         if (mExpenseDatabase != null && totalsListener != null)
             mExpenseDatabase.removeEventListener(totalsListener);
 
-        if (mExpenseDatabase != null && barListener != null)
-            mExpenseDatabase.removeEventListener(barListener);
+        if (mExpenseDatabase != null && statisticsListener != null)
+            mExpenseDatabase.removeEventListener(statisticsListener);
     }
     @Override
     public void onDestroyView() {
@@ -119,15 +103,7 @@ public class DashboardFragment extends Fragment {
         initViews(view);
         setupRecyclerViews();
         loadTotals();
-        
-        // Delay load BarChart để tránh OOM khi Fragment mới được tạo
-        if (view != null) {
-            view.post(() -> {
-                if (isAdded() && getActivity() != null && barChart != null) {
-                    loadBarChart();
-                }
-            });
-        }
+        loadStatisticsText();
 
         return view;
     }
@@ -143,7 +119,7 @@ public class DashboardFragment extends Fragment {
         totalExpenseResult = view.findViewById(R.id.expense_set_result);
         totalBalanceResult = view.findViewById(R.id.balance_set_result);
 
-        barChart = view.findViewById(R.id.bar_chart);
+        statisticsText = view.findViewById(R.id.statistics_text);
 
         mRecyclerIncome = view.findViewById(R.id.recycler_income);
         mRecyclerExpense = view.findViewById(R.id.recycler_expense);
@@ -230,57 +206,80 @@ public class DashboardFragment extends Fragment {
                 }).show();
     }
 
-    // ───── BAR CHART FIXED (1 listener duy nhất) ──────────────────
-    private void loadBarChart() {
+    // ───── STATISTICS TEXT ─────────────────────────────────────────
+    private void loadStatisticsText() {
+        if (statisticsText == null || mExpenseDatabase == null) return;
 
-        barListener = new ValueEventListener() {
+        statisticsListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (statisticsText == null || !isAdded()) return;
 
-                barEntries.clear();
-                dateLabels.clear();
-
-                int count = 0;
-                float index = 0f;
+                int transactionCount = 0;
+                double totalExpense = 0;
+                double maxExpense = 0;
+                double minExpense = Double.MAX_VALUE;
+                String maxDate = "";
+                String minDate = "";
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    if (count >= MAX_BAR_ENTRIES) break;
-
                     Data data = ds.getValue(Data.class);
-                    if (data == null || data.getDate() == null) continue;
+                    if (data != null) {
+                        transactionCount++;
+                        double amount = data.getAmount();
+                        totalExpense += amount;
 
-                    try {
-                        Date d = inputFormat.parse(data.getDate());
-                        dateLabels.add(outputFormat.format(d));
-                        barEntries.add(new BarEntry(index, (float) data.getAmount()));
-                        index++;
-                        count++;
-                    } catch (Exception e) {
-                        Log.e("ChartError", e.getMessage());
+                        if (amount > maxExpense) {
+                            maxExpense = amount;
+                            maxDate = data.getDate();
+                        }
+                        if (amount < minExpense) {
+                            minExpense = amount;
+                            minDate = data.getDate();
+                        }
                     }
                 }
 
-                BarDataSet barDataSet = new BarDataSet(barEntries, "Chi tiêu");
-                barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-                barDataSet.setValueTextColor(Color.BLACK);
-                barDataSet.setValueTextSize(12f);
+                // Format thống kê dạng text
+                StringBuilder statsText = new StringBuilder();
+                statsText.append("THỐNG KÊ CHI TIÊU\n\n");
+                
+                if (transactionCount > 0) {
+                    double avgExpense = totalExpense / transactionCount;
+                    statsText.append("• Tổng giao dịch: ").append(transactionCount).append("\n");
+                    statsText.append("• Tổng chi tiêu: ").append(String.format("%.0f", totalExpense)).append(" đ\n");
+                    statsText.append("• Chi tiêu trung bình: ").append(String.format("%.0f", avgExpense)).append(" đ\n");
+                    
+                    if (maxExpense > 0) {
+                        statsText.append("• Chi tiêu cao nhất: ").append(String.format("%.0f", maxExpense)).append(" đ\n");
+                        if (maxDate != null && !maxDate.isEmpty()) {
+                            statsText.append("  Ngày: ").append(maxDate).append("\n");
+                        }
+                    }
+                    
+                    if (minExpense < Double.MAX_VALUE) {
+                        statsText.append("• Chi tiêu thấp nhất: ").append(String.format("%.0f", minExpense)).append(" đ\n");
+                        if (minDate != null && !minDate.isEmpty()) {
+                            statsText.append("  Ngày: ").append(minDate);
+                        }
+                    }
+                } else {
+                    statsText.append("Chưa có dữ liệu chi tiêu");
+                }
 
-                BarData barData = new BarData(barDataSet);
-                barChart.setData(barData);
-
-                XAxis xAxis = barChart.getXAxis();
-                xAxis.setValueFormatter(new IndexAxisValueFormatter(dateLabels));
-                xAxis.setGranularity(1f);
-                xAxis.setTextSize(10f);
-
-                barChart.invalidate();
+                statisticsText.setText(statsText.toString());
             }
 
-            @Override public void onCancelled(@NonNull DatabaseError error) {}
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (statisticsText != null && isAdded()) {
+                    statisticsText.setText("Lỗi khi tải thống kê");
+                }
+            }
         };
 
-        mExpenseDatabase.limitToLast(MAX_BAR_ENTRIES)
-                .addValueEventListener(barListener);
+        mExpenseDatabase.limitToLast(MAX_RECYCLER_ITEMS)
+                .addValueEventListener(statisticsListener);
     }
 
     // ───── RECYCLER VIEW ─────────────────────────────────────────

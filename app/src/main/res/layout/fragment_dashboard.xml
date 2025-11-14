@@ -200,13 +200,19 @@
                     android:textAppearance="?android:textAppearanceLarge"
                     android:padding="10dp"></TextView>
 
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/bar_chart"
-                    android:layout_marginTop="10dp"
+                <TextView
+                    android:id="@+id/statistics_text"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:padding="10dp"
-                    android:layout_marginBottom="20dp"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:padding="15dp"
+                    android:background="@android:color/transparent"
+                    android:text="Đang tải thống kê..."
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="@color/black"
+                    android:gravity="center"
+                    android:lineSpacingExtra="4dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
