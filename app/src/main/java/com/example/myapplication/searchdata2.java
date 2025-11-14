@@ -39,11 +39,14 @@ public class searchdata2 extends AppCompatActivity {
         FirebaseUser mUser=mAuth.getCurrentUser();
 
 
-        if(mAuth!=null)
-        {String uid = mUser.getUid();
-            //mref= FirebaseDatabase.getInstance().getReference("IncomeData");
-            mref = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+        if (mUser == null) {  // Thêm check
+            finish();
+            return;
         }
+
+        String uid = mUser.getUid();
+        mref = FirebaseDatabase.getInstance().getReference("Expense").child(uid);  // Sửa path
+
 
 
         listdata=(ListView)findViewById(R.id.listdata);

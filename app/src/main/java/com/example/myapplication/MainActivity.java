@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.bumptech.glide.Glide;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SPLASH_TIME_OUT=3200;
@@ -38,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
         imageView.setAnimation(top);
         textView1.setAnimation(bottom);
         textView2.setAnimation(bottom);
+        Glide.with(this)
+                .load(R.drawable.spendeelogo)  // hoặc resource ID của ảnh
+                .placeholder(R.drawable.spendeelogo)  // ảnh placeholder
+                .error(R.drawable.yellowdesign)  // ảnh lỗi
+                .into(imageView);
 
         new Handler().postDelayed(new Runnable() {
             public void run()

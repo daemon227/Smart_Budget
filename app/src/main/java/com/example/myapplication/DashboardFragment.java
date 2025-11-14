@@ -102,6 +102,7 @@ public class DashboardFragment extends Fragment {
 
         initViews(view);
         setupRecyclerViews();
+        setupFABListeners();
         loadTotals();
         loadStatisticsText();
 
@@ -290,6 +291,42 @@ public class DashboardFragment extends Fragment {
         mRecyclerExpense.setLayoutManager(
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false)
         );
+    }
+    private void setupFABListeners() {
+        fabMain.setOnClickListener(v -> {
+            if (!isOpen) {
+                showFABMenu();
+            } else {
+                closeFABMenu();
+            }
+        });
+
+        fabIncomeBtn.setOnClickListener(v -> {
+            closeFABMenu();
+            incomeDataInsert();
+        });
+
+        fabExpenseBtn.setOnClickListener(v -> {
+            closeFABMenu();
+            expenseDataInsert();
+        });
+    }
+
+    private void showFABMenu() {
+        isOpen = true;
+        fabIncomeBtn.setVisibility(View.VISIBLE);
+        fabExpenseBtn.setVisibility(View.VISIBLE);
+        fabIncomeTxt.setVisibility(View.VISIBLE);
+        fabExpenseTxt.setVisibility(View.VISIBLE);
+        // Animation có thể thêm sau
+    }
+
+    private void closeFABMenu() {
+        isOpen = false;
+        fabIncomeBtn.setVisibility(View.INVISIBLE);
+        fabExpenseBtn.setVisibility(View.INVISIBLE);
+        fabIncomeTxt.setVisibility(View.INVISIBLE);
+        fabExpenseTxt.setVisibility(View.INVISIBLE);
     }
 
     // ───── INSERT DATA ────────────────────────────────────────────
