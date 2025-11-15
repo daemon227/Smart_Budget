@@ -215,7 +215,7 @@
                     android:padding="10dp"
                     android:textColor="@color/gray"
                     android:textStyle="italic"
-                    android:text="SAVE MONEY"
+                    android:text="Lưu tiền"
                     android:textAppearance="?android:textAppearanceLarge"></TextView>
 
                 <TextView

@@ -145,7 +145,8 @@ private FirebaseAuth mAuth;
     {
         FirebaseUser firebaseUser=mAuth.getInstance().getCurrentUser();
         Boolean emailflag=firebaseUser.isEmailVerified();
-        if(emailflag)
+        // bỏ xác thực
+        if(true)
         {
             finish();
             Toast.makeText(getApplicationContext(),"Login Successful..",Toast.LENGTH_SHORT).show();
