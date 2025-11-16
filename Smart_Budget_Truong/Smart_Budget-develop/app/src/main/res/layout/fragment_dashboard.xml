@@ -215,7 +215,7 @@
                     android:padding="10dp"
                     android:textColor="@color/gray"
                     android:textStyle="italic"
-                    android:text="SAVE MONEY"
+                    android:text="Lưu tiền"
                     android:textAppearance="?android:textAppearanceLarge"></TextView>
 
                 <TextView
@@ -227,7 +227,7 @@
                     android:textStyle="italic"
                     android:fontFamily="@font/holtwood_one_sc"
                     android:textColor="@color/gray"
-                    android:text="LIVE BETTER"
+                    android:text="SỐNG TỐT HƠN"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:padding="10dp"></TextView>
 
@@ -243,7 +243,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Expense"
+                android:text="Chi tiêu"
                 android:id="@+id/expense_ft_text"
                 android:padding="5dp"
                 android:textColor="@color/black"
@@ -279,7 +279,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Income"
+                android:text="Thu Nhập"
                 android:id="@+id/income_ft_text"
                 android:textColor="@color/black"
                 android:padding="5dp"

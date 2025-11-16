@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <!-- HEADER -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/yellow">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tìm kiếm"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <!-- AutoComplete -->
+    <AutoCompleteTextView
+        android:id="@+id/txtSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Chọn ngày (gợi ý)"
+        android:padding="10dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_bg" />
+
+    <!-- Single Date -->
+    <EditText
+        android:id="@+id/edt_single_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Chọn 1 ngày"
+        android:focusable="false"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_bg" />
+
+    <Button
+        android:id="@+id/btn_search_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tìm theo 1 ngày"
+        android:layout_marginTop="8dp"
+        android:background="@color/black"
+        android:textColor="@color/white" />
+
+    <!-- Range Dates -->
+    <EditText
+        android:id="@+id/edt_start_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngày bắt đầu"
+        android:focusable="false"
+        android:padding="10dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/edittext_bg" />
+
+    <EditText
+        android:id="@+id/edt_end_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ngày kết thúc"
+        android:focusable="false"
+        android:padding="10dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/edittext_bg" />
+
+    <Button
+        android:id="@+id/btn_search_between"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tìm theo khoảng ngày"
+        android:layout_marginTop="8dp"
+        android:background="@color/black"
+        android:textColor="@color/white" />
+
+    <!-- Amount Range -->
+    <EditText
+        android:id="@+id/edt_min_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Số tiền tối thiểu"
+        android:inputType="number"
+        android:padding="10dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/edittext_bg" />
+
+    <EditText
+        android:id="@+id/edt_max_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Số tiền tối đa"
+        android:inputType="number"
+        android:padding="10dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/edittext_bg" />
+
+    <Button
+        android:id="@+id/btn_search_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tìm theo khoảng tiền"
+        android:layout_marginTop="8dp"
+        android:background="@color/black"
+        android:textColor="@color/white" />
+
+    <!-- RESULT LIST -->
+    <ListView
+        android:id="@+id/listdata"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
