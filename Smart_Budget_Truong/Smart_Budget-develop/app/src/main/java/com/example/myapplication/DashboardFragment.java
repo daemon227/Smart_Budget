@@ -52,6 +52,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -371,123 +373,199 @@ public class DashboardFragment extends Fragment {
 
     }
 
-    public void incomeDataInsert(){
-        AlertDialog.Builder mydialog=new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater=LayoutInflater.from(getActivity());
-
-        View myviewm=inflater.inflate(R.layout.custom_layout_for_insertdata,null);
+    public void incomeDataInsert() {
+        AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View myviewm = inflater.inflate(R.layout.custom_layout_for_insertdata, null);
         mydialog.setView(myviewm);
-        AlertDialog dialog=mydialog.create();
-
-        EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
-        EditText edtType=myviewm.findViewById(R.id.type_edt);
-        EditText edtNote=myviewm.findViewById(R.id.note_edt);
-
-        Button btnSave=myviewm.findViewById(R.id.btnSave);
-        Button btnCancel=myviewm.findViewById(R.id.btnCancel);
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
-                String amount=edtAmount.getText().toString().trim();
-                String note=edtNote.getText().toString().trim();
-
-                if(TextUtils.isEmpty(amount)){
-                    edtAmount.setError("Required Field..");
-                    return;
-                }
-                int ouramountint=Integer.parseInt(amount);
-                if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
-                }
-                if(TextUtils.isEmpty(note)){
-                    edtNote.setError("Required Field..");
-                    return;
-                }
-
-                if(mAuth.getCurrentUser()!=null) {
-                    String id = mIncomeDatabase.push().getKey();
-                    String mDate = DateFormat.getDateInstance().format(new Date());
-                    Data data = new Data(ouramountint, type, note, id, mDate);
-
-                    mIncomeDatabase.child(id).setValue(data);
-                    Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
-                }
-
-                ftAnimation();
-                dialog.dismiss();
-            }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ftAnimation();
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }
-    public void expenseDataInsert(){
-        AlertDialog.Builder mydialog=new AlertDialog.Builder(getActivity());
-
-        LayoutInflater inflater=LayoutInflater.from(getActivity());
-
-        View myviewm=inflater.inflate(R.layout.custom_layout_for_insertdata,null);
-        mydialog.setView(myviewm);
-        final AlertDialog dialog=mydialog.create();
+        AlertDialog dialog = mydialog.create();
         dialog.setCancelable(false);
 
-        EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
-        EditText edtType=myviewm.findViewById(R.id.type_edt);
-        EditText edtNote=myviewm.findViewById(R.id.note_edt);
+        EditText edtAmount = myviewm.findViewById(R.id.amount_edt);
+        TextView edtType   = myviewm.findViewById(R.id.type_edt);
+        EditText edtNote   = myviewm.findViewById(R.id.note_edt);
 
-        Button btnSave=myviewm.findViewById(R.id.btnSave);
-        Button btnCancel=myviewm.findViewById(R.id.btnCancel);
+        Button btnSave   = myviewm.findViewById(R.id.btnSave);
+        Button btnCancel = myviewm.findViewById(R.id.btnCancel);
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
-                String amount=edtAmount.getText().toString().trim();
-                String note=edtNote.getText().toString().trim();
+        // Danh mục cho THU NHẬP (bạn thích sửa lại tên tùy ý)
+        final String[] incomeCategories = {
+                "Lương",
+                "Thưởng",
+                "Lãi",
+                "Khoản khác"
+        };
 
-                if(TextUtils.isEmpty(amount)){
-                    edtAmount.setError("Required Field..");
-                    return;
-                }
-                int ouramountinte=Integer.parseInt(amount);
-                if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
-                }
-                if(TextUtils.isEmpty(note)){
-                    edtNote.setError("Required Field..");
-                    return;
-                }
-                if(mAuth.getCurrentUser()!=null) {
-                    String id = mExpenseDatabase.push().getKey();
-                    String mDate = DateFormat.getDateInstance().format(new Date());
-                    Data data = new Data(ouramountinte, type, note, id, mDate);
+        edtType.setText("Khoản khác");
+        edtType.setFocusable(false);
+        edtType.setClickable(true);
+        edtType.setFocusableInTouchMode(false);
+        edtType.setCursorVisible(false);
 
-                    mExpenseDatabase.child(id).setValue(data);
-                    Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
+        edtType.setOnClickListener(v -> {
+            AlertDialog.Builder listDialog = new AlertDialog.Builder(getActivity());
+            listDialog.setTitle("Chọn loại thu nhập");
+            listDialog.setItems(incomeCategories, (dialogInterface, which) -> {
+                String selected = incomeCategories[which];
+                if (selected.equals("Khoản khác")) {
+                    showCustomCategoryDialog(edtType);
+                } else {
+                    edtType.setText(selected);
                 }
-                ftAnimation();
-                dialog.dismiss();
-            }
+            });
+            listDialog.show();
         });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ftAnimation();
-                dialog.dismiss();
+
+        btnSave.setOnClickListener(v -> {
+            String type   = edtType.getText().toString().trim();
+            String amount = edtAmount.getText().toString().trim();
+            String note   = edtNote.getText().toString().trim();
+
+            if (TextUtils.isEmpty(amount)) {
+                edtAmount.setError("Required Field..");
+                return;
             }
+            int ouramountint = Integer.parseInt(amount);
+
+            if (TextUtils.isEmpty(note)) {
+                edtNote.setError("Required Field..");
+                return;
+            }
+
+            if (mAuth.getCurrentUser() != null) {
+                String id   = mIncomeDatabase.push().getKey();
+                String mDate = DateFormat.getDateInstance().format(new Date());
+                Data data   = new Data(ouramountint, type, note, id, mDate);
+                mIncomeDatabase.child(id).setValue(data);
+                Toast.makeText(getActivity(), "Đã thêm thu nhập", Toast.LENGTH_SHORT).show();
+            }
+
+            ftAnimation();
+            dialog.dismiss();
         });
+
+        btnCancel.setOnClickListener(v -> {
+            ftAnimation();
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
+
+    public void expenseDataInsert() {
+        AlertDialog.Builder mydialog = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View myviewm = inflater.inflate(R.layout.custom_layout_for_insertdata, null);
+        mydialog.setView(myviewm);
+
+        final AlertDialog dialog = mydialog.create();
+        dialog.setCancelable(false);
+        dialog.getWindow().setSoftInputMode(
+                android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+        );
+
+        EditText edtAmount = myviewm.findViewById(R.id.amount_edt);
+        TextView edtType   = myviewm.findViewById(R.id.type_edt);
+        EditText edtNote   = myviewm.findViewById(R.id.note_edt);
+
+        Button btnSave   = myviewm.findViewById(R.id.btnSave);
+        Button btnCancel = myviewm.findViewById(R.id.btnCancel);
+
+        // DANH MỤC KHOẢN CHI
+        final String[] expenseCategories = {
+                "Đồ ăn",
+                "Gửi xe",
+                "Đi lại",
+                "Hóa đơn",
+                "Mua sắm",
+                "Giải trí",
+                "Khác"
+        };
+
+        edtType.setText("Khác");
+        edtType.setFocusable(false);
+        edtType.setClickable(true);
+        edtType.setFocusableInTouchMode(false);
+        edtType.setCursorVisible(false);
+
+        edtType.setOnClickListener(v -> {
+            AlertDialog.Builder listDialog = new AlertDialog.Builder(getActivity());
+            listDialog.setTitle("Chọn danh mục chi tiêu");
+            listDialog.setItems(expenseCategories, (dialogInterface, which) -> {
+                String selected = expenseCategories[which];
+                if (selected.equals("Khác")) {
+                    showCustomCategoryDialog(edtType);
+                } else {
+                    edtType.setText(selected);
+                }
+            });
+            listDialog.show();
+        });
+
+        btnSave.setOnClickListener(v -> {
+            String type   = edtType.getText().toString().trim();
+            String amount = edtAmount.getText().toString().trim();
+            String note   = edtNote.getText().toString().trim();
+
+            if (TextUtils.isEmpty(amount)) {
+                edtAmount.setError("Required Field..");
+                return;
+            }
+            int money = Integer.parseInt(amount);
+
+            if (TextUtils.isEmpty(note)) {
+                edtNote.setError("Required Field..");
+                return;
+            }
+
+            if (TextUtils.isEmpty(type)) {
+                type = "Khác";
+            }
+
+            if (mAuth.getCurrentUser() != null) {
+                String id   = mExpenseDatabase.push().getKey();
+                String date = DateFormat.getDateInstance().format(new Date());
+                Data data   = new Data(money, type, note, id, date);
+                mExpenseDatabase.child(id).setValue(data);
+                Toast.makeText(getActivity(), "Đã thêm khoản chi", Toast.LENGTH_SHORT).show();
+            }
+
+            ftAnimation();
+            dialog.dismiss();
+        });
+
+        btnCancel.setOnClickListener(v -> {
+            ftAnimation();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+
+    private void showCustomCategoryDialog(TextView target) {
+        AlertDialog.Builder inputDialog = new AlertDialog.Builder(getActivity());
+        inputDialog.setTitle("Nhập danh mục khác");
+
+        final EditText input = new EditText(getActivity());
+        input.setHint("Ví dụ: Đi đám cưới");
+        inputDialog.setView(input);
+
+        inputDialog.setPositiveButton("OK", (d, which) -> {
+            String value = input.getText().toString().trim();
+            if (!value.isEmpty()) {
+                target.setText(value);
+            } else {
+                target.setText("Khác");
+            }
+        });
+
+        inputDialog.setNegativeButton("Hủy", (d, which) -> d.dismiss());
+        inputDialog.show();
+    }
+
+
+
 
     @Override
     public void onStart() {

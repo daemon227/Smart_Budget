@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:digits="0123456789."
-                    android:hint="Principal"
+                    android:hint="Tiền gốc"
                     android:inputType="number"
                     android:singleLine="true"
                     tools:ignore="Autofill" />
@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:digits="0123456789."
-                    android:hint="Interest"
+                    android:hint="Lãi suất (%) "
                     android:inputType="number"
                     android:singleLine="true"
                     tools:ignore="Autofill" />
@@ -65,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:digits="0123456789."
-                    android:hint="Years"
+                    android:hint="Số năm vay"
                     android:inputType="number"
                     tools:ignore="Autofill" />
 
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:background="@color/yellow"
-                android:text="Calculate"
+                android:text="Tính"
                 android:textColor="@color/black"
                 tools:ignore="HardcodedText" />
 
@@ -94,7 +94,7 @@
                     android:id="@+id/emi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Emi"
+                    android:hint="Tiền trả hàng tháng (EMI)"
                     android:inputType="number"
                     android:maxEms="0"
                     tools:ignore="Autofill" />
@@ -112,7 +112,7 @@
                     android:id="@+id/interest_total"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Interest_total"
+                    android:hint="Tổng tiền lãi"
                     android:inputType="number"
                     tools:ignore="Autofill" />
 

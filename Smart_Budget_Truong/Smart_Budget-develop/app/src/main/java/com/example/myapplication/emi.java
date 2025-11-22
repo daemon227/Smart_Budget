@@ -37,19 +37,19 @@ public class emi extends AppCompatActivity {
                 String st3 = Y.getText().toString();
 
                 if (TextUtils.isEmpty(st1)) {
-                    P.setError("Enter Principal Amount");
+                    P.setError("Nhập số tiền gốc");
                     P.requestFocus();
                     return;
                 }
 
                 if (TextUtils.isEmpty(st2)) {
-                    I.setError("Enter Interest Rate");
+                    I.setError("Nhập lãi suất");
                     I.requestFocus();
                     return;
                 }
 
                 if (TextUtils.isEmpty(st3)) {
-                    Y.setError("Enter Years");
+                    Y.setError("Nhập số năm");
                     Y.requestFocus();
                     return;
                 }

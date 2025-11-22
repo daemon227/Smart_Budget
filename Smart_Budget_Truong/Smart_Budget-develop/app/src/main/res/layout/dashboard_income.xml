@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Type:"
+            android:text="Loai:"
             android:maxLines="1"
             android:ellipsize="end"
             android:textStyle="bold"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="5dp"
-            android:text="Amount:"
+            android:text="Số tiền :"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/black"

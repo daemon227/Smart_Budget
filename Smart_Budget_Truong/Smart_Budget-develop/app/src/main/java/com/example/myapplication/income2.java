@@ -66,7 +66,7 @@ public class income2 extends AppCompatActivity {
 
                 }
                 catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), "An Error Occurred, Please try again!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi, vui lòng thử lại!", Toast.LENGTH_LONG).show();
 
                 }
             }

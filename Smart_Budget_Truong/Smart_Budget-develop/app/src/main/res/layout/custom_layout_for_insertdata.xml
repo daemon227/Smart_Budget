@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:padding="16dp">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -11,168 +11,111 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <!-- SỐ TIỀN -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <RelativeLayout
+                <TextView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content">
+                    android:text="SỐ TIỀN:"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SỐ TIỀN:"
-                        android:textColor="@color/black"
-                        android:textSize="18dp"
-                        />
-
-                </RelativeLayout>
-
-                <RelativeLayout
+                <EditText
+                    android:id="@+id/amount_edt"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:layout_margin="10dp"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/amount_edt"
-                        android:textColor="@color/black"
-                        />
-
-                </RelativeLayout>
+                    android:inputType="number"
+                    android:textColor="@color/black" />
             </LinearLayout>
 
+            <!-- LOẠI -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <RelativeLayout
+                <TextView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content">
+                    android:text="LOẠI:"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="LOẠI:"
-                        android:textSize="18dp"
-                        android:textColor="@color/black"
-                        />
-
-                </RelativeLayout>
-
-                <RelativeLayout
+                <!-- TextView giả ô chọn danh mục -->
+                <TextView
+                    android:id="@+id/type_edt"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:layout_margin="10dp"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/type_edt"
-                        android:textColor="@color/black"
-                        />
-
-                </RelativeLayout>
+                    android:padding="10dp"
+                    android:text="Khác"
+                    android:background="@android:drawable/edit_text"
+                    android:textColor="@color/black"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="false"
+                    android:foreground="?attr/selectableItemBackground" />
             </LinearLayout>
 
+            <!-- GHI CHÚ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <RelativeLayout
+                <TextView
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content">
+                    android:text="GHI CHÚ:"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GHI CHÚ:"
-                        android:textSize="18dp"
-                        android:textColor="@color/black"
-                        />
-
-                </RelativeLayout>
-
-                <RelativeLayout
+                <EditText
+                    android:id="@+id/note_edt"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:layout_margin="10dp"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/note_edt"
-                        android:textColor="@color/black"
-                        />
-
-                </RelativeLayout>
+                    android:textColor="@color/black" />
             </LinearLayout>
 
+            <!-- BUTTONS -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-                <RelativeLayout
+                <Button
+                    android:id="@+id/btnCancel"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content">
+                    android:background="@color/yellow"
+                    android:text="Quay lại"
+                    android:textColor="@color/black" />
 
-                    <Button
-                        android:id="@+id/btnCancel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/yellow"
-                        android:backgroundTint="@color/yellow"
-                        android:text="Quay lại"
-                        android:textAppearance="?android:textAppearanceMedium"
-                        android:textColor="@color/black" />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
+                <Button
+                    android:id="@+id/btnSave"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content">
-
-                    <Button
-                        android:id="@+id/btnSave"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/yellow"
-                        android:backgroundTint="@color/yellow"
-                        android:text="Lưu"
-                        android:textAppearance="?android:textAppearanceMedium"
-                        android:textColor="@color/black" />
-
-                </RelativeLayout>
-
-
+                    android:background="@color/yellow"
+                    android:text="Lưu"
+                    android:textColor="@color/black" />
             </LinearLayout>
 
         </LinearLayout>

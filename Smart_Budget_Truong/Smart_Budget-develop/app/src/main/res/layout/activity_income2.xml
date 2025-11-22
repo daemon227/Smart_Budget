@@ -12,7 +12,7 @@
         android:layout_height="28dp"
         android:layout_marginBottom="16dp"
         android:background="@color/yellow"
-        android:text="Calculate"
+        android:text="Tính"
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/table"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         android:layout_marginBottom="16dp"
         android:background="@color/yellow"
         android:enabled="false"
-        android:text="Continue"
+        android:text="Tiếp tục "
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/table"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Stand Deduction"
+        android:text="Khấu trừ tiêu chuẩn"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
         android:textSize="16sp"
@@ -191,7 +191,7 @@
         android:id="@+id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Basic Salary"
+        android:text="Lương cơ bản"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
         android:textSize="16sp"
@@ -229,7 +229,7 @@
                 android:background="#FFFFFF"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Basic Pay"
+                android:text="Lương cơ bản"
                 android:textSize="16sp" />
 
             <TextView
@@ -254,7 +254,7 @@
                 android:background="#FFFFFF"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="HRA"
+                android:text="Phụ cấp nhà ở (HRA)"
                 android:textSize="16sp" />
 
             <TextView
@@ -279,7 +279,7 @@
                 android:background="#FFFFFF"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="SA"
+                android:text="Phụ cấp đặc biệt SA"
                 android:textSize="16sp" />
 
             <TextView
@@ -304,7 +304,7 @@
                 android:background="#FFFFFF"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="LTA"
+                android:text="Phụ cấp đi lại (LTA)"
                 android:textSize="16sp" />
 
             <TextView
@@ -329,7 +329,7 @@
                 android:background="#FFFFFF"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="STANDARD D"
+                android:text="Khấu trừ tiêu chuẩn"
                 android:textSize="16sp" />
 
             <TextView
